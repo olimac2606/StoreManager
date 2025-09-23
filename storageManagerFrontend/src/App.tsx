@@ -3,9 +3,9 @@ import { Outlet } from "react-router-dom";
 
 export default function App() {
   return (
-    <div>
+    <div className='flex'>
       <SideBar />
-      <main>
+      <main className='w-full'>
         <Outlet />
       </main>
     </div>
