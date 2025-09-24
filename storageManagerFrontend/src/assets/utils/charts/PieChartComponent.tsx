@@ -12,26 +12,24 @@ export default function PieChartComponent({
 
     return (
         <Chart.Root w="100%" h="100%" chart={chart}>
-            <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                    <Pie
-                        isAnimationActive={false}
-                        data={chart.data}
-                        dataKey={chart.key("value")}
-                        outerRadius="80%"
-                        labelLine={false}
-                        label={({ name, index }) => {
-                            const { value } = chart.data[index ?? -1]
-                            const percent = value / chart.getTotal("value")
-                            return `${name}: ${(percent * 100).toFixed(1)}%`
-                        }}
-                    >
-                        {chart.data.map((item) => (
-                            <Cell key={item.name} fill={chart.color(item.color)} />
-                        ))}
-                    </Pie>
-                </PieChart>
-            </ResponsiveContainer>
+            <PieChart>
+                <Pie
+                    isAnimationActive={false}
+                    data={chart.data}
+                    dataKey={chart.key("value")}
+                    outerRadius="80%"
+                    labelLine={false}
+                    label={({ name, index }) => {
+                        const { value } = chart.data[index ?? -1]
+                        const percent = value / chart.getTotal("value")
+                        return `${name}: ${(percent * 100).toFixed(1)}%`
+                    }}
+                >
+                    {chart.data.map((item) => (
+                        <Cell key={item.name} fill={chart.color(item.color)} />
+                    ))}
+                </Pie>
+            </PieChart>
         </Chart.Root>
     )
 }
