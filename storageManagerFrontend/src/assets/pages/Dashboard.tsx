@@ -113,12 +113,12 @@ export default function Dashboard() {
       </div>
 
       <div className="grid gap-[1.5rem] grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
-        <Card minWidth="min-w-[693px]" maxHeight="max-h-[424px]">
+        <Card maxHeight="max-h-[424px]">
           <ChartAndQuickCard heightChildrenContainer="h-[300px]" title={barData.title} description={barData.description}>
             <BarChartComponent GraphDataProp={barChartData} />
           </ChartAndQuickCard>
         </Card>
-        <Card minWidth="min-w-[693px]" maxHeight="max-h-[424px]">
+        <Card maxHeight="max-h-[424px]">
           <ChartAndQuickCard heightChildrenContainer="h-[300px]" title={pieData.title} description={pieData.description}>
             <PieChartComponent GraphDataProp={pieChartData} />
           </ChartAndQuickCard>
