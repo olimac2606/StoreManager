@@ -12,7 +12,7 @@ type StatCardProps = {
 
 export default function StatCard({ title, children, amount, change, changeType, description, }: StatCardProps) {
     return (
-        <div className="p-[1rem]">
+        <div>
             <div className="flex justify-between items-center mb-[0.5rem]">
                 <span className="font-[500]">{title}</span>
                 {children}
@@ -21,14 +21,14 @@ export default function StatCard({ title, children, amount, change, changeType, 
                 <span className="text-[24px] font-[700]">{amount}</span>
                 <div className="flex items-center gap-[0.2rem] text-[12px]">
                     {changeType === 'increase' && change ? (
-                        <ArrowUpIcon color="#4ADE80" size="12"/>
+                        <ArrowUpIcon color="#4ADE80" size="12" />
                     ) : changeType === 'decrease' ? (
                         <ArrowDownIcon color="#EF4444" size="12" />
-                    ): null}
+                    ) : null}
                     {change && (
                         <span className={`${changeType === "increase" ? 'text-[#4ADE80]' : 'text-[#EF4444]'}`}>{changeType === "increase" ? "+" : "-"}{change}</span>
                     )}
-                    
+
                 </div>
                 <span className="text-[12px] text-[#667085]">{description}</span>
             </div>

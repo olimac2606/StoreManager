@@ -1,9 +1,12 @@
 import React from "react";
 import Card from "../components/Card";
-import GraphCard from "../components/GraphCard";
+import ChartAndQuickCard from "../components/ChartAndQuickCard";
 import StatCard from "../components/StatCard";
 import DollarIcon from "../utils/icons/DollarIcon";
 import ProductsIcon from "../utils/icons/ProductsIcon";
+import BarChartComponent from "../utils/charts/BarChartComponent";
+import PieChartComponent from "../utils/charts/PieChartComponent";
+import QuickActionsCard from "../components/QuickActionsCard";
 
 type IconProps = {
   color: string;
@@ -21,7 +24,44 @@ type CardInfo = {
   icon: IconRender;
 };
 
+type BarChartDataProp = { sales: number; day: string }[];
+type PieChartDataProp = { value: number; name: string; color: string }[];
+type ChartDataProp = BarChartDataProp | PieChartDataProp;
+
+type ChartCardInfo = {
+  title: string;
+  description: string;
+};
+
 export default function Dashboard() {
+  const barData: ChartCardInfo = {
+    title: "Sales This Week",
+    description: "Sales performance over the last 7 days",
+  }
+
+  const pieData: ChartCardInfo = {
+    title: "Top Categories",
+    description: "Best selling product categories",
+  }
+
+  const pieChartData: ChartDataProp = [
+    { value: 25, name: "Clothing", color: "blue.solid" },
+    { value: 20, name: "Home & Garden", color: "purple.solid" },
+    { value: 12, name: "Sports", color: "orange.solid" },
+    { value: 8, name: "Other", color: "gray.solid" },
+    { value: 35, name: "Electronics", color: "green.solid" },
+  ];
+
+  const barChartData: ChartDataProp = [
+    { sales: 63000, day: "Mon" },
+    { sales: 72000, day: "Tue" },
+    { sales: 55000, day: "Wed" },
+    { sales: 46000, day: "Thu" },
+    { sales: 83000, day: "Fri" },
+    { sales: 71000, day: "Sat" },
+    { sales: 68000, day: "Sun" },
+  ];
+
   const cards: CardInfo[] = [
     {
       title: "Daily Sales",
@@ -65,7 +105,7 @@ export default function Dashboard() {
                 changeType={card.changeType}
                 description={card.description}
               >
-                {card.icon({color: "#667085", size: "16"})}
+                {card.icon({ color: "#667085", size: "16" })}
               </StatCard>
             </Card>
           </div>
@@ -73,9 +113,24 @@ export default function Dashboard() {
       </div>
 
       <div className="grid gap-[1.5rem] grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
-        <GraphCard />
-        <GraphCard />
+        <Card minWidth="min-w-[693px]" maxHeight="max-h-[424px]">
+          <ChartAndQuickCard heightChildrenContainer="h-[300px]" title={barData.title} description={barData.description}>
+            <BarChartComponent GraphDataProp={barChartData} />
+          </ChartAndQuickCard>
+        </Card>
+        <Card minWidth="min-w-[693px]" maxHeight="max-h-[424px]">
+          <ChartAndQuickCard heightChildrenContainer="h-[300px]" title={pieData.title} description={pieData.description}>
+            <PieChartComponent GraphDataProp={pieChartData} />
+          </ChartAndQuickCard>
+        </Card>
       </div>
-    </div>
+      <div className="grid gap-[1.5rem] grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
+        <Card>
+          <ChartAndQuickCard title="Quick Actions" description="Jump to commonly used features">
+            <QuickActionsCard />
+          </ChartAndQuickCard>
+        </Card>
+      </div>
+    </div >
   );
 }
