@@ -4,15 +4,18 @@ import ProductsCard from "../components/ProductsCard"
 import ProductCard from "../components/ProductCard"
 import CurrentSaleCard from "../components/CurrentSaleCard"
 import PaymentCard from "../components/PaymentCard"
-import { useState } from "react"
+import {useSelectedProducts} from "../contexts/SelectedProductsContext"
 
 type Data = {
     id: number;
     name: string;
     category: string;
     price: number;
+    amount: number;
     stock: number;
 }
+
+
 
 const data: Data[] = [
     {
@@ -20,6 +23,7 @@ const data: Data[] = [
         name: "Smartphone",
         category: "Electronics",
         price: 699.99,
+        amount: 0,
         stock: 25
     },
     {
@@ -27,6 +31,7 @@ const data: Data[] = [
         name: "Laptop",
         category: "Electronics",
         price: 1299.99,
+        amount: 0,
         stock: 15
     },
     {
@@ -34,12 +39,14 @@ const data: Data[] = [
         name: "Headphones",
         category: "Electronics",
         price: 199.99,
+        amount: 0,
         stock: 10
     }, {
         id: 4,
         name: "T-shirt",
         category: "Clothing",
         price: 29.99,
+        amount: 0,
         stock: 100
     },
     {
@@ -47,6 +54,7 @@ const data: Data[] = [
         name: "Jeans",
         category: "Clothing",
         price: 69.99,
+        amount: 0,
         stock: 75
     },
     {
@@ -54,6 +62,7 @@ const data: Data[] = [
         name: "Sneakers",
         category: "Clothing",
         price: 130.99,
+        amount: 0,
         stock: 40
     },
     {
@@ -61,6 +70,7 @@ const data: Data[] = [
         name: "Coffee Mug",
         category: "Accessories",
         price: 14.99,
+        amount: 0,
         stock: 25
     },
     {
@@ -68,12 +78,13 @@ const data: Data[] = [
         name: "Notebook",
         category: "Accessories",
         price: 9.99,
+        amount: 0,
         stock: 150
     },
 ]
 
 export default function Sales() {
-    const [selectedProducts, setSelectedProducts] = useState<Data[]>([]);
+    const {setSelectedProducts} = useSelectedProducts();
     return (
         <div className="px-[1.8rem] pt-[1rem] bg-[#FAFAFA]">
             <div className="flex gap-[10px] items-center">
@@ -85,13 +96,24 @@ export default function Sales() {
                     <Card>
                         <ProductsCard>
                             {data.map((item) => (
-                                <div key={item.id} onClick={() => { setSelectedProducts(prev => [...prev, item]) }}>
-                                    <ProductCard
-                                        name={item.name}
-                                        category={item.category}
-                                        price={item.price}
-                                        stock={item.stock}
-                                    />
+                                <div key={item.id} 
+                                    onClick={() => {
+                                        setSelectedProducts(prev => {
+                                            const idx = prev.findIndex(p => p.id === item.id);
+                                            if (idx === -1) {
+                                            return [...prev, { ...item, amount: 1 }];
+                                            }
+                                            const updated = { ...prev[idx], amount: prev[idx].amount + 1 };
+                                            return prev.map(p => p.id === item.id ? updated : p);
+                                        });
+                                    }}
+                                >
+                                        <ProductCard
+                                            name={item.name}
+                                            category={item.category}
+                                            price={item.price}
+                                            stock={item.stock}
+                                        />
                                 </div>
                             ))}
                         </ProductsCard>
@@ -99,10 +121,10 @@ export default function Sales() {
                 </div>
                 <div className="flex flex-col gap-[0.1rem]">
                     <Card>
-                        <CurrentSaleCard selectedProducts={selectedProducts} />
+                        <CurrentSaleCard />
                     </Card>
                     <Card>
-                        <PaymentCard total={0} />
+                        <PaymentCard />
                     </Card>
                 </div>
             </div>

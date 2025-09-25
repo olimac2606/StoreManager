@@ -1,13 +1,15 @@
 import ClearButton from "./ClearButton"
 import SaleLineItem from "./SaleLineItem"
+import { useSelectedProducts } from "../contexts/SelectedProductsContext"
 
-export default function CurrentSaleCard({ selectedProducts }: { selectedProducts: { name: string; price: number; stock: number; category: string; id: number }[] }) {
+export default function CurrentSaleCard() {
+    const {selectedProducts, setSelectedProducts} = useSelectedProducts();
     return (
         <div>
             <div className="flex justify-between items-center">
                 <span className="text-[25px] font-[500]">Current Sale</span>
                 {selectedProducts.length > 0 ?
-                    <div>
+                    <div onClick={() => setSelectedProducts([])}>
                         <ClearButton />
                     </div>
                     : null
@@ -19,12 +21,14 @@ export default function CurrentSaleCard({ selectedProducts }: { selectedProducts
                 </div>
             ) : null}
             <div className="mt-[20px]">
-                {selectedProducts.map((item) => (
+                {selectedProducts
+                .filter(item => item.amount > 0)
+                .map((item) => (
                     <div className="mb-[10px]" key={item.id}>
-                        <SaleLineItem productName={item.name} price={item.price} />
+                        <SaleLineItem id={item.id} productName={item.name} price={item.price} amount={item.amount}/>
                     </div>
                 ))}
             </div>
         </div>
     )
-}
+} 
