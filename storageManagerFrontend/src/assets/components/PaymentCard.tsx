@@ -2,8 +2,11 @@ import { InputGroup, Input } from "@chakra-ui/react"
 import DollarIcon from "../utils/icons/DollarIcon"
 import { Button } from "@chakra-ui/react"
 import Change from "./Change"
+import { useSelectedProducts } from "../contexts/SelectedProductsContext"
 
-export default function PaymentCard({ total }: { total: number }) {
+export default function PaymentCard() {
+    const {selectedProducts} = useSelectedProducts()
+    const total = selectedProducts.reduce((sum, product) => sum + product.price * product.amount, 0);
     return (
         <div>
             <span className="text-[25px] font-[500]">Payment</span>
@@ -16,7 +19,7 @@ export default function PaymentCard({ total }: { total: number }) {
                 <InputGroup startElement={<DollarIcon color="currentColor" size="16" />}>
                     <Input placeholder="0.00" />
                 </InputGroup>
-                {/* <Change /> */}
+                <Change />
                 <Button disabled className="bg-[#4ADE80] w-[100%]">
                     Complete Sale
                 </Button>

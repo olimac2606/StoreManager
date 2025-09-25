@@ -1,4 +1,5 @@
 import SideBar from './assets/components/SideBar';
+import SelectedProductsContextProvider from './assets/contexts/SelectedProductsContext';
 import { Outlet } from "react-router-dom";
 
 export default function App() {
@@ -6,7 +7,9 @@ export default function App() {
     <div className='flex'>
       <SideBar />
       <main className='w-full'>
-        <Outlet />
+        <SelectedProductsContextProvider>
+          <Outlet />
+        </SelectedProductsContextProvider>
       </main>
     </div>
   )
