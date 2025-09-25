@@ -1,5 +1,5 @@
 import { Chart, useChart } from "@chakra-ui/charts"
-import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts"
+import { Cell, Pie, PieChart } from "recharts"
 
 export default function PieChartComponent({
     GraphDataProp,

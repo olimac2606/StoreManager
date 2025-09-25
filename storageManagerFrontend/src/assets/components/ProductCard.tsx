@@ -9,9 +9,9 @@ type Props = {
     price: number
 }
 
-export default function ProductCard ({ name, category, stock, price }: Props) {
+export default function ProductCard({ name, category, stock, price }: Props) {
     return (
-        <Card minWidth="min-w-[183px]">
+        <Card withoutMargin={true} hover="hover:bg-[#EEFCF3]" pointer="cursor-pointer" minWidth="min-w-[183px]">
             <div>
                 <div className="flex flex-col">
                     <span className="font-[500] mb-[8px]">{name}</span>
@@ -21,7 +21,7 @@ export default function ProductCard ({ name, category, stock, price }: Props) {
                     <span className="text-[#4ADE80] font-[700] text-[18px]">${price}</span>
                     <span className="text-[#71717A] text-[14px]">{`Stock: ${stock}`}</span>
                 </div>
-                <Button className="bg-[#4ADE80] hover:bg-[#56fa92ff] w-[100%]">
+                <Button className="bg-[#4ADE80] w-[100%]">
                     <CrossIcon color="#FFFFFF" size="20" />
                     Add to Sale
                 </Button>
