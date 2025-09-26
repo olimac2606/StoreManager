@@ -1,12 +1,20 @@
-import { InputGroup, Input } from "@chakra-ui/react"
+import { InputGroup, NumberInput } from "@chakra-ui/react"
 import DollarIcon from "../utils/icons/DollarIcon"
 import { Button } from "@chakra-ui/react"
 import Change from "./Change"
 import { useSelectedProducts } from "../contexts/SelectedProductsContext"
+import { useState } from "react"
+
 
 export default function PaymentCard() {
-    const {selectedProducts} = useSelectedProducts()
+    const { selectedProducts } = useSelectedProducts()
+    const [amountReceive, setAmountReceive] = useState(0)
     const total = selectedProducts.reduce((sum, product) => sum + product.price * product.amount, 0);
+    const change = amountReceive - total;
+    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+        setAmountReceive(parseFloat(e.target.value))
+
+    }
     return (
         <div>
             <span className="text-[25px] font-[500]">Payment</span>
@@ -16,14 +24,26 @@ export default function PaymentCard() {
             </div>
             <div className="flex flex-col gap-[0.8rem]">
                 <span className="font-[500]">Amount receive</span>
-                <InputGroup startElement={<DollarIcon color="currentColor" size="16" />}>
-                    <Input placeholder="0.00" />
-                </InputGroup>
-                <Change />
-                <Button disabled className="bg-[#4ADE80] w-[100%]">
+                <form >
+                    <NumberInput.Root>
+                        <NumberInput.Label />
+                        <NumberInput.Control>
+                            <NumberInput.IncrementTrigger />
+                            <NumberInput.DecrementTrigger />
+                        </NumberInput.Control>
+                        <NumberInput.Scrubber />
+                        <InputGroup startElement={<DollarIcon color="currentColor" size="16" />}>
+                            <NumberInput.Input onChange={handleChange} placeholder="0.00" />
+                        </InputGroup>
+                    </NumberInput.Root>
+                </form>
+                <div className={`${change > 0 ? "" : "hidden"}`}>
+                    <Change change={change} />
+                </div>
+                <Button disabled={selectedProducts.length === 0 || amountReceive === 0 || isNaN(amountReceive)} className="bg-[#4ADE80] w-[100%]">
                     Complete Sale
                 </Button>
             </div>
-        </div>
+        </div >
     )
 }
