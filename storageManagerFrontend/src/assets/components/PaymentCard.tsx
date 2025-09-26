@@ -4,6 +4,7 @@ import { Button } from "@chakra-ui/react"
 import Change from "./Change"
 import { useSelectedProducts } from "../contexts/SelectedProductsContext"
 import { useState } from "react"
+import { toaster } from "@/components/ui/toaster"
 
 
 export default function PaymentCard() {
@@ -37,10 +38,29 @@ export default function PaymentCard() {
                         </InputGroup>
                     </NumberInput.Root>
                 </form>
-                <div className={`${change > 0 ? "" : "hidden"}`}>
+                <div className={`${change >= 0 ? "" : "hidden"}`}>
                     <Change change={change} />
                 </div>
-                <Button disabled={selectedProducts.length === 0 || amountReceive === 0 || isNaN(amountReceive)} className="bg-[#4ADE80] w-[100%]">
+                <Button onClick={() => {
+                    if (change >= 0) {
+                        toaster.create({
+                            title: "Sale completed succesfully",
+                            description: `Total: $${total}, Change: $${Math.round(change * 100) / 100}`,
+                            type: "success",
+                            closable: true,
+                            duration: 5000,
+                        })
+                    } else {
+                        toaster.create({
+                            title: "Insufficient payment",
+                            description: "Amount received is less than the total amount",
+                            type: "error",
+                            closable: true,
+                            duration: 5000,
+                        })
+                    }
+                }} 
+                disabled={selectedProducts.length === 0 || amountReceive === 0 || isNaN(amountReceive)} className="bg-[#4ADE80] w-[100%]">
                     Complete Sale
                 </Button>
             </div>

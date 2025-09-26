@@ -10,7 +10,7 @@ export default function CurrentSaleCard() {
                 <span className="text-[25px] font-[500]">Current Sale</span>
                 {selectedProducts.length > 0 ?
                     <div onClick={() => setSelectedProducts([])}>
-                        <ClearButton />
+                        <ClearButton text="Clear"/>
                     </div>
                     : null
                 }

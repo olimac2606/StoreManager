@@ -10,6 +10,7 @@ import Suppliers from './assets/pages/Suppliers'
 import NonFoundPage from './assets/components/NonFoundPage'
 import { Provider } from "@/components/ui/provider"
 import App from './App'
+import { Toaster } from './components/ui/toaster'
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider>
       <RouterProvider router={router} />
+      <Toaster />
     </Provider>
   </StrictMode>,
 )
