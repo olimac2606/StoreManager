@@ -4,7 +4,7 @@ import ProductsCard from "../components/ProductsCard"
 import ProductCard from "../components/ProductCard"
 import CurrentSaleCard from "../components/CurrentSaleCard"
 import PaymentCard from "../components/PaymentCard"
-import {useSelectedProducts} from "../contexts/SelectedProductsContext"
+import { useSelectedProducts } from "../contexts/SelectedProductsContext"
 
 type Data = {
     id: number;
@@ -84,7 +84,7 @@ const data: Data[] = [
 ]
 
 export default function Sales() {
-    const {setSelectedProducts} = useSelectedProducts();
+    const { setSelectedProducts } = useSelectedProducts();
     return (
         <div className="px-[1.8rem] pt-[1rem] bg-[#FAFAFA]">
             <div className="flex gap-[10px] items-center">
@@ -96,24 +96,24 @@ export default function Sales() {
                     <Card>
                         <ProductsCard>
                             {data.map((item) => (
-                                <div key={item.id} 
+                                <div key={item.id}
                                     onClick={() => {
                                         setSelectedProducts(prev => {
                                             const idx = prev.findIndex(p => p.id === item.id);
                                             if (idx === -1) {
-                                            return [...prev, { ...item, amount: 1 }];
+                                                return [...prev, { ...item, amount: 1 }];
                                             }
                                             const updated = { ...prev[idx], amount: prev[idx].amount + 1 };
                                             return prev.map(p => p.id === item.id ? updated : p);
                                         });
                                     }}
                                 >
-                                        <ProductCard
-                                            name={item.name}
-                                            category={item.category}
-                                            price={item.price}
-                                            stock={item.stock}
-                                        />
+                                    <ProductCard
+                                        name={item.name}
+                                        category={item.category}
+                                        price={item.price}
+                                        stock={item.stock}
+                                    />
                                 </div>
                             ))}
                         </ProductsCard>
