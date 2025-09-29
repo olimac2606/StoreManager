@@ -14,7 +14,6 @@ export default function PaymentCard() {
     const change = amountReceive - total;
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         setAmountReceive(parseFloat(e.target.value))
-
     }
     return (
         <div>
