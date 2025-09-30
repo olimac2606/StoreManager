@@ -5,7 +5,7 @@ import { Input, InputGroup } from "@chakra-ui/react"
 import SearchIcon from "../utils/icons/SearchIcon"
 import SelectChakra from "../components/SelectChakra"
 import TableChakra from "../components/TableChakra"
-import { useEffect, useState } from "react"
+import { useState, useMemo } from "react"
 
 type CategoryValue = "all" | "electronics" | "clothing" | "homeAndGarden" | "sports";
 type ProductCategory = "Electronics" | "Clothing" | "Home & Garden" | "Sports";
@@ -26,8 +26,8 @@ type Product = {
 
 export default function Products() {
   const options: Option[] = [
-    { label: "All Categories", value: "all" }, 
-    { label: "Electronics", value: "electronics" }, 
+    { label: "All Categories", value: "all" },
+    { label: "Electronics", value: "electronics" },
     { label: "Clothing", value: "clothing" },
     { label: "Home & Garden", value: "homeAndGarden" },
     { label: "Sports", value: "sports" },
@@ -83,51 +83,35 @@ export default function Products() {
   ]
   const [category, setCategory] = useState("all")
   const [inputValue, setInputValue] = useState("")
-  const [productsFilteredByCategory, setProductsFilteredByCategory] = useState(products)
-  const handleChangeCategory = (category: string) => {
-    switch (category) {
-      case "all":
-        setCategory("all")
-        break;
 
-      case "electronics":
-        setCategory("Electronics")
-        break;
+  const categoryMap: Record<CategoryValue, ProductCategory | "all"> = {
+    all: "all",
+    electronics: "Electronics",
+    clothing: "Clothing",
+    homeAndGarden: "Home & Garden",
+    sports: "Sports",
+  };
 
-      case "clothing":
-        setCategory("Clothing")
-        break;
-
-      case "homeAndGarden":
-        setCategory("Home & Garden")
-        break;
-      
-      case "sports":
-        setCategory("Sports")
-        break;
-      default:
-        break;
-    }
+  const handleChangeCategory = (category: CategoryValue) => {
+    setCategory(categoryMap[category]);
   }
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value.trim().toLowerCase())
-    // const copyProducts = structuredClone(productsFilteredByCategory)
-    // const arrayFiltered = copyProducts.filter(product => product.name.toLocaleLowerCase().startsWith(input))
-    // if (input === "") {
-    //   handleChangeCategory(category)
-    //   return
-    // }
-    // setProductsFilteredByCategory(arrayFiltered)
   }
 
-  useEffect(() => {
-    const copyProducts = structuredClone(products)
-    copyProducts.filter((product) => product.name.toLowerCase().startsWith(inputValue) && product.category === category)
-    setProductsFilteredByCategory(copyProducts)
-  }, [inputValue, category])
+  const filteredProducts = useMemo(() => {
+    const input = inputValue.trim().toLowerCase();
 
-  console.log(productsFilteredByCategory)
+    return products.filter((product) => {
+      const matchesName = product.name.toLowerCase().startsWith(input);
+      console.log(matchesName)
+      console.log(product.name)
+      console.log(input)
+      const matchesCategory = category === "all" || product.category === category;
+      return matchesName && matchesCategory;
+    });
+  }, [products, inputValue, category]);
 
   return (
     <div className="px-[1.8rem] pt-[1rem] bg-[#FAFAFA]">
@@ -143,15 +127,15 @@ export default function Products() {
       </div>
       <Card minHeight="min-h-auto">
         <div className="grid grid-cols-[4fr_1fr] gap-[1rem]">
-          <InputGroup startElement={<SearchIcon color="#667085" size="20"/>}>
+          <InputGroup startElement={<SearchIcon color="#667085" size="20" />}>
             <Input onChange={handleInput} className="bg-[#FAFAFA]" placeholder="Search products..." />
           </InputGroup>
-          <SelectChakra onChangeCategory={handleChangeCategory} array={options}/>
+          <SelectChakra onChangeCategory={handleChangeCategory} array={options} />
         </div>
       </Card>
       <Card>
         <h2 className="text-[26px] font-[500]">Product Invetory</h2>
-        <TableChakra products={productsFilteredByCategory} headers={headers}/>
+        <TableChakra products={filteredProducts} headers={headers} />
       </Card>
     </div>
   )
