@@ -1,46 +1,44 @@
-import { Portal, Select, createListCollection } from "@chakra-ui/react"
-type CategoryValue = "all" | "electronics" | "clothing" | "homeAndGarden" | "sports";
+import { Select, createListCollection } from "@chakra-ui/react";
+import type { CategoryValue, Option } from "@/types/product";
 
-type Array = {
-  label: string;
-  value: CategoryValue;
-}
-export default function SelectChakra({ array, onChangeCategory }: { array: Array[], onChangeCategory: (category: CategoryValue) => void }) {
-  const categories = createListCollection({
-    items: array,
-  })
+type Props = {
+  option: Option[];
+  onChangeCategory?: (category: CategoryValue) => void; 
+};
+
+export default function SelectChakra({ option, onChangeCategory }: Props) {
+  const categories = createListCollection({ items: option });
 
   return (
     <Select.Root
       collection={categories}
       size="md"
-      width="320px"
+      className="w-full"
       defaultValue={["all"]}
       onValueChange={(e) => {
-        onChangeCategory(e.value[0] as CategoryValue)
+        const v = e.value[0] as CategoryValue;
+        onChangeCategory?.(v);
       }}
     >
-      <Select.HiddenSelect />
+      <Select.HiddenSelect name="category" />
       <Select.Control>
         <Select.Trigger>
-          <Select.ValueText placeholder="All Categories" />
+          <Select.ValueText placeholder="Select Category" />
         </Select.Trigger>
         <Select.IndicatorGroup>
           <Select.Indicator />
         </Select.IndicatorGroup>
       </Select.Control>
-      <Portal>
-        <Select.Positioner>
-          <Select.Content>
-            {categories.items.map((category) => (
-              <Select.Item item={category} key={category.value}>
-                {category.label}
-                <Select.ItemIndicator />
-              </Select.Item>
-            ))}
-          </Select.Content>
-        </Select.Positioner>
-      </Portal>
+      <Select.Positioner zIndex={1700}>
+        <Select.Content>
+          {categories.items.map((category) => (
+            <Select.Item item={category} key={category.value}>
+              {category.label}
+              <Select.ItemIndicator />
+            </Select.Item>
+          ))}
+        </Select.Content>
+      </Select.Positioner>
     </Select.Root>
-  )
+  );
 }
