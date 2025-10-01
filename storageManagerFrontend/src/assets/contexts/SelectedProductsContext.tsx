@@ -1,12 +1,5 @@
 import React, { createContext, useState } from "react";
-type Product = {
-  id: number;
-  name: string;
-  price: number;
-  stock: number;
-  category: string;
-  amount: number;
-};
+import type { Product } from "@/types/product";
 
 type SelectedProductsCtx = {
   selectedProducts: Product[];

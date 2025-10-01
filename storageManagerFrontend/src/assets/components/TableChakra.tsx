@@ -2,15 +2,18 @@ import { Table } from "@chakra-ui/react"
 import ClearButton from "./ClearButton"
 import EditButton from "./EditButton"
 import type { Product } from "@/types/product";
+import { useEditingProduct } from "../contexts/EditingProductContext";
 
 type Props = {
     headers: string[],
     products: Product[],
     onDelete: (idProduct: number) => void
-    onEdit: (idProduct: number) => void
 }
 
-export default function TableChakra({ headers, products, onDelete, onEdit }: Props) {
+export default function TableChakra({ headers, products, onDelete }: Props) {
+    
+    const {setEditingProduct} = useEditingProduct()
+
     return (
         <Table.Root>
             <Table.Caption />
@@ -35,7 +38,7 @@ export default function TableChakra({ headers, products, onDelete, onEdit }: Pro
                         </Table.Cell>
                         <Table.Cell>
                             <div className="flex gap-[10px]">
-                                <div onClick={() => onEdit(product.id)}>
+                                <div onClick={() => setEditingProduct(product)}>
                                     <EditButton />
                                 </div>
                                 <div onClick={() => onDelete(product.id)}>

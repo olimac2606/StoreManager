@@ -1,6 +1,7 @@
 import { Button, CloseButton, Dialog, Portal } from "@chakra-ui/react"
 import type { ReactNode } from "react"
-import React, { useState, cloneElement, useEffect } from "react"
+import React, { cloneElement, useState } from "react"
+import { useEditingProduct } from "../contexts/EditingProductContext"
 
 type DialogProps = {
     buttonText: string,
@@ -8,29 +9,26 @@ type DialogProps = {
     buttonStyles: string,
     dialogTitle: string,
     saveButtonStyles: string,
-    idOnEdit: number,
 }
 
-export default function DialogChakra({ buttonText, children, buttonStyles, dialogTitle, saveButtonStyles, idOnEdit }: DialogProps) {
+export default function DialogChakra({ buttonText, children, buttonStyles, dialogTitle, saveButtonStyles}: DialogProps) {
     const items = React.Children.toArray(children)
-    console.log(idOnEdit)
-    const [open, setOpen] = useState(false)
-    const [idEditProduct, setIdEditProduct] = useState(idOnEdit)
-
+    const [localOpen, setLocalOpen] = useState(false);
+    const {editingProduct, setEditingProduct} = useEditingProduct()
+    let open = localOpen || editingProduct !== null
     const body = cloneElement(items[1] as React.ReactElement<any>, {
-        onSubmitted: () => setOpen(false),
+        onSubmitted: () => {
+            setLocalOpen(false);
+            setEditingProduct(null);
+        },
         formId: "productForm",
-        idOnEdit: idEditProduct !== 0 ? idEditProduct : undefined,
     })
 
-    useEffect(() => {
-        if (idOnEdit !== 0) {
-            setOpen(true)
-        }
-    }), [idOnEdit]
-
     return (
-        <Dialog.Root open={open} onOpenChange={(e) => setOpen(e.open)}>
+        <Dialog.Root open={open} onOpenChange={(e) => {
+            setLocalOpen(e.open);
+            if (!e.open) setEditingProduct(null) 
+        }}>
             <Dialog.Trigger asChild>
                 <Button size="sm" className={buttonStyles}>
                     {items[0]}

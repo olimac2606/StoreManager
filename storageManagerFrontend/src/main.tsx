@@ -11,6 +11,8 @@ import NonFoundPage from './assets/components/NonFoundPage'
 import { Provider } from "@/components/ui/provider"
 import App from './App'
 import { Toaster } from './components/ui/toaster'
+import SelectedProductsContextProvider from './assets/contexts/SelectedProductsContext';
+import EditingProductContextProvider from './assets/contexts/EditingProductContext';
 
 const router = createBrowserRouter([
   {
@@ -18,9 +20,17 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {index: true, element: <Dashboard />},
-      {path: 'products', element: <Products />},
+      {path: 'products', element:
+        <EditingProductContextProvider>
+          <Products />
+        </EditingProductContextProvider>
+      },
       {path: 'reports', element: <Reports />},
-      {path: 'sales', element: <Sales />},
+      {path: 'sales', element: 
+        <SelectedProductsContextProvider>
+          <Sales />
+        </SelectedProductsContextProvider>        
+      },
       {path: 'suppliers', element: <Suppliers />},
       {path: '*', element: <NonFoundPage />},
     ],

@@ -8,6 +8,7 @@ import { useState, useMemo } from "react"
 import DialogChakra from "../components/DialogChakra"
 import FormProduct from "../components/FormProduct"
 import type { CategoryValue, Option, ProductForm, ProductCategory, StatusValue, Product } from "@/types/product"
+import { useEditingProduct } from "../contexts/EditingProductContext"
 
 export default function Products() {
 
@@ -71,7 +72,6 @@ export default function Products() {
   )
   const [category, setCategory] = useState<CategoryValue>("all")
   const [inputValue, setInputValue] = useState("")
-  const [idOnEdit, setidOnEdit] = useState(0)
   const categoryMap: Record<Exclude<CategoryValue, "all">, ProductCategory> = {
     electronics: "Electronics",
     clothing: "Clothing",
@@ -96,6 +96,12 @@ export default function Products() {
       price: formData.price,
       stock: formData.stock,
       status: statusValue,
+    }
+    
+    if (editingProduct !== null) {
+      if (editingProduct.id === unshiftToProducts.id) {
+        setProducts(prev => prev.filter((product) => product.id !== editingProduct.id))
+      }
     }
     setProducts(prev => [unshiftToProducts, ...prev])
   }
@@ -129,10 +135,7 @@ export default function Products() {
     )
   }
 
-  const onEdit = (idProduct: number) => {
-    setidOnEdit(idProduct)
-  }
-
+  const {editingProduct} = useEditingProduct()
   return (
     <div className="px-[1.8rem] pt-[1rem] bg-[#FAFAFA]">
       <div className="flex items-center justify-between">
@@ -145,7 +148,6 @@ export default function Products() {
           buttonText="Add Product"
           dialogTitle="Create Product"
           saveButtonStyles="bg-[#5CE18C]"
-          idOnEdit={idOnEdit}
         >
           <CrossIcon color="#FFFFFF" size="10" />
           <FormProduct handleForm={handleForm} currentProducts={products} />
@@ -161,7 +163,7 @@ export default function Products() {
       </Card>
       <Card>
         <h2 className="text-[26px] font-[500]">Product Invetory</h2>
-        <TableChakra products={filteredProducts} headers={headers} onDelete={onDelete} onEdit={onEdit} />
+        <TableChakra products={filteredProducts} headers={headers} onDelete={onDelete} />
       </Card>
     </div>
   )
