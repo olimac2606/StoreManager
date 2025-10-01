@@ -1,27 +1,24 @@
 import { Table } from "@chakra-ui/react"
 import ClearButton from "./ClearButton"
 import EditButton from "./EditButton"
+import type { Product } from "@/types/product";
 
-export type ProductCategory = "Electronics" | "Clothing" | "Home & Garden" | "Sports";
-export type statusValue = "In Stock" | "Medium" | "Low Stock"
-
-export type Product = {
-  name: string;
-  category: ProductCategory;
-  price: number;
-  stock: number;
-  status: statusValue;
+type Props = {
+    headers: string[],
+    products: Product[],
+    onDelete: (idProduct: number) => void
+    onEdit: (idProduct: number) => void
 }
 
-export default function TableChakra ({headers, products}: {headers: string[], products: Product[]}) {
+export default function TableChakra({ headers, products, onDelete, onEdit }: Props) {
     return (
         <Table.Root>
             <Table.Caption />
             <Table.Header>
                 <Table.Row>
-                {headers.map((header, i) => (
-                    <Table.ColumnHeader  key={i}>{header}</Table.ColumnHeader>
-                ))}
+                    {headers.map((header, i) => (
+                        <Table.ColumnHeader key={i}>{header}</Table.ColumnHeader>
+                    ))}
                 </Table.Row>
             </Table.Header>
             <Table.Body>
@@ -38,13 +35,17 @@ export default function TableChakra ({headers, products}: {headers: string[], pr
                         </Table.Cell>
                         <Table.Cell>
                             <div className="flex gap-[10px]">
-                                <EditButton />
-                                <ClearButton />
+                                <div onClick={() => onEdit(product.id)}>
+                                    <EditButton />
+                                </div>
+                                <div onClick={() => onDelete(product.id)}>
+                                    <ClearButton />
+                                </div>
                             </div>
                         </Table.Cell>
                     </Table.Row>
                 ))}
-                
+
             </Table.Body>
         </Table.Root>
     )

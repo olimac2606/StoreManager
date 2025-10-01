@@ -1,14 +1,15 @@
 import { Field, Input, Stack, NumberInput } from "@chakra-ui/react"
 import SelectChakra from "./SelectChakra"
-import type { Option, ProductForm, CategoryKey } from "@/types/product";
+import type { Option, ProductForm, CategoryKey, Product } from "@/types/product";
 
 type Props = {
     handleForm: (dataForm: ProductForm) => void;
-    onSubmitted?: () => void 
-    formId?: string   
+    onSubmitted?: () => void;
+    formId?: string;
+    currentProducts: Product[];
 }
 
-export default function FormProduct ({ handleForm, onSubmitted, formId }: Props) {
+export default function FormProduct({ handleForm, onSubmitted, formId, currentProducts }: Props) {
 
     const options: Option[] = [
         { label: "Electronics", value: "electronics" },
@@ -21,15 +22,16 @@ export default function FormProduct ({ handleForm, onSubmitted, formId }: Props)
         e.preventDefault()
         const fd = new FormData(e.currentTarget);
         const payload: ProductForm = {
-        name: String(fd.get("name") ?? "").trim(),
-        category: fd.get("category") as CategoryKey,
-        price: Number(fd.get("price") ?? 0),
-        stock: Number(fd.get("stock") ?? 0),
+            id: currentProducts.length + 1,
+            name: String(fd.get("name") ?? "").trim(),
+            category: fd.get("category") as CategoryKey,
+            price: Number(fd.get("price") ?? 0),
+            stock: Number(fd.get("stock") ?? 0),
         };
 
         handleForm(payload);
         onSubmitted?.()
-        e.currentTarget.reset()  
+        e.currentTarget.reset()
     }
 
     return (
@@ -37,13 +39,13 @@ export default function FormProduct ({ handleForm, onSubmitted, formId }: Props)
             <Stack>
                 <Field.Root>
                     <Field.Label>Product Name</Field.Label>
-                    <Input name="name"/>
+                    <Input name="name" />
                     <Field.ErrorText></Field.ErrorText>
                 </Field.Root>
 
                 <Field.Root>
                     <Field.Label>Product Name</Field.Label>
-                    <SelectChakra option={options}/>
+                    <SelectChakra option={options} />
                     <Field.ErrorText></Field.ErrorText>
                 </Field.Root>
 
