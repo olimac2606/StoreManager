@@ -5,19 +5,9 @@ import ProductCard from "../components/ProductCard"
 import CurrentSaleCard from "../components/CurrentSaleCard"
 import PaymentCard from "../components/PaymentCard"
 import { useSelectedProducts } from "../contexts/SelectedProductsContext"
+import type { Product } from "@/types/product"
 
-type Data = {
-    id: number;
-    name: string;
-    category: string;
-    price: number;
-    amount: number;
-    stock: number;
-}
-
-
-
-const data: Data[] = [
+const data: Product[] = [
     {
         id: 1,
         name: "Smartphone",
@@ -68,7 +58,7 @@ const data: Data[] = [
     {
         id: 7,
         name: "Coffee Mug",
-        category: "Accessories",
+        category: "Home & Garden",
         price: 14.99,
         amount: 0,
         stock: 25
@@ -76,7 +66,7 @@ const data: Data[] = [
     {
         id: 8,
         name: "Notebook",
-        category: "Accessories",
+        category: "Home & Garden",
         price: 9.99,
         amount: 0,
         stock: 150
@@ -103,7 +93,7 @@ export default function Sales() {
                                             if (idx === -1) {
                                                 return [...prev, { ...item, amount: 1 }];
                                             }
-                                            const updated = { ...prev[idx], amount: prev[idx].amount + 1 };
+                                            const updated = { ...prev[idx], amount: (prev[idx].amount ?? 0) + 1 };
                                             return prev.map(p => p.id === item.id ? updated : p);
                                         });
                                     }}

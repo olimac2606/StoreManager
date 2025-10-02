@@ -36,5 +36,6 @@ export type Product = {
   category: ProductCategory;
   price: number;
   stock: number;
-  status: StatusValue;
+  status?: StatusValue;
+  amount?: number;
 };
