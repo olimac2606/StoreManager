@@ -3,7 +3,7 @@ import Card from "../components/Card"
 import { Input, InputGroup } from "@chakra-ui/react"
 import SearchIcon from "../utils/icons/SearchIcon"
 import SelectChakra from "../components/SelectChakra"
-import TableChakra from "../components/TableChakra"
+import ProductsTable from "../components/ProductsTable"
 import { useState, useMemo } from "react"
 import DialogChakra from "../components/DialogChakra"
 import FormProduct from "../components/FormProduct"
@@ -163,7 +163,7 @@ export default function Products() {
       </Card>
       <Card>
         <h2 className="text-[26px] font-[500]">Product Invetory</h2>
-        <TableChakra products={filteredProducts} headers={headers} onDelete={onDelete} />
+        <ProductsTable products={filteredProducts} headers={headers} onDelete={onDelete} />
       </Card>
     </div>
   )

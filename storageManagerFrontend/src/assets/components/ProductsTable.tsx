@@ -10,7 +10,7 @@ type Props = {
     onDelete: (idProduct: number) => void
 }
 
-export default function TableChakra({ headers, products, onDelete }: Props) {
+export default function ProductsTable({ headers, products, onDelete }: Props) {
     
     const {setEditingProduct} = useEditingProduct()
 
@@ -48,7 +48,6 @@ export default function TableChakra({ headers, products, onDelete }: Props) {
                         </Table.Cell>
                     </Table.Row>
                 ))}
-
             </Table.Body>
         </Table.Root>
     )

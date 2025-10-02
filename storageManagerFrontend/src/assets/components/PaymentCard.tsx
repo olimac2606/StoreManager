@@ -10,7 +10,10 @@ import { toaster } from "@/components/ui/toaster"
 export default function PaymentCard() {
     const { selectedProducts } = useSelectedProducts()
     const [amountReceive, setAmountReceive] = useState(0)
-    const total = selectedProducts.reduce((sum, product) => sum + product.price * product.amount, 0);
+    const total = selectedProducts.reduce(
+        (sum, p) => sum + p.price * (p.amount ?? 0),
+        0
+    );
     const change = amountReceive - total;
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         setAmountReceive(parseFloat(e.target.value))
@@ -24,7 +27,7 @@ export default function PaymentCard() {
             </div>
             <div className="flex flex-col gap-[0.8rem]">
                 <span className="font-[500]">Amount receive</span>
-                <form >
+                <form>
                     <NumberInput.Root>
                         <NumberInput.Label />
                         <NumberInput.Control>
