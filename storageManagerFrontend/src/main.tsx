@@ -13,6 +13,7 @@ import App from './App'
 import { Toaster } from './components/ui/toaster'
 import SelectedProductsContextProvider from './assets/contexts/SelectedProductsContext';
 import EditingProductContextProvider from './assets/contexts/EditingProductContext';
+import EditingSupplierContextProvider from './assets/contexts/EditingSupplierContext'
 
 const router = createBrowserRouter([
   {
@@ -31,7 +32,11 @@ const router = createBrowserRouter([
           <Sales />
         </SelectedProductsContextProvider>        
       },
-      {path: 'suppliers', element: <Suppliers />},
+      {path: 'suppliers', element:
+        <EditingSupplierContextProvider>
+          <Suppliers />
+        </EditingSupplierContextProvider>
+      },
       {path: '*', element: <NonFoundPage />},
     ],
   }

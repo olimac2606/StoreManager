@@ -1,13 +1,25 @@
 import { Table } from "@chakra-ui/react"
 import ClearButton from "./ClearButton"
 import EditButton from "./EditButton"
+import { useEditingSupplier } from "../contexts/EditingSupplierContext"
+
+type Supplier = {
+    id: number;
+    name: string;
+    contact: string;
+    email: string;
+    phone: string;
+}
 
 type Props = {
     headers: string[],
-    suppliers: { id: number; name: string; contact: string; email: string; phone: string }[]
+    suppliers: Supplier[],
+    onDelete: (id: number) => void,
 }
 
-export default function SuppliersTable ({ headers, suppliers}: Props) {
+export default function SuppliersTable ({ headers, suppliers, onDelete}: Props) {
+    
+    const { setEditingSupplier } = useEditingSupplier()
     return (
         <Table.Root>
         <Table.Caption />
@@ -27,10 +39,10 @@ export default function SuppliersTable ({ headers, suppliers}: Props) {
                     <Table.Cell>{supplier.phone}</Table.Cell>
                     <Table.Cell>
                         <div className="flex gap-[10px]">
-                            <div onClick={() => (supplier)}>
+                            <div onClick={() => setEditingSupplier(supplier)}>
                                 <EditButton />
                             </div>
-                            <div onClick={() => (supplier.id)}>
+                            <div onClick={() => onDelete(supplier.id)}>
                                 <ClearButton />
                             </div>
                         </div>

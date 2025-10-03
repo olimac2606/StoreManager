@@ -6,7 +6,7 @@ import SelectChakra from "../components/SelectChakra"
 import ProductsTable from "../components/ProductsTable"
 import { useState, useMemo } from "react"
 import DialogChakra from "../components/DialogChakra"
-import FormProduct from "../components/FormProduct"
+import ProductForm from "../components/ProductForm"
 import type { CategoryValue, Option, ProductForm, ProductCategory, StatusValue, Product } from "@/types/product"
 import { useEditingProduct } from "../contexts/EditingProductContext"
 
@@ -148,9 +148,10 @@ export default function Products() {
           buttonText="Add Product"
           dialogTitle="Create Product"
           saveButtonStyles="bg-[#5CE18C]"
+          formId="productForm"
         >
           <CrossIcon color="#FFFFFF" size="10" />
-          <FormProduct handleForm={handleForm} currentProducts={products} />
+          <ProductForm handleForm={handleForm} currentProducts={products} />
         </DialogChakra>
       </div>
       <Card minHeight="min-h-auto">

@@ -11,7 +11,7 @@ type Props = {
     currentProducts: Product[];
 }
 
-export default function FormProduct({ handleForm, onSubmitted, formId, currentProducts }: Props) {
+export default function ProductForm({ handleForm, onSubmitted, formId, currentProducts }: Props) {
 
     const options: Option[] = [
         { label: "Electronics", value: "electronics" },
@@ -35,7 +35,6 @@ export default function FormProduct({ handleForm, onSubmitted, formId, currentPr
         const fd = new FormData(e.currentTarget);
         const catRaw = fd.get("category");
         if (!isCategoryKey(catRaw)) {
-            console.log(catRaw)
             return;
         }
         const payload: ProductForm = {
