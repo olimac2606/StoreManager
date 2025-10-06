@@ -1,16 +1,17 @@
 import { Stack, Input, Field } from "@chakra-ui/react";
-import { useEditingSupplier } from "../contexts/EditingSupplierContext";
+import { useEditingSupplier } from "@/assets/contexts/EditingSupplierContext";
 
 type SupplierPayload = {
-  companyName: string;
-  contactPerson: string;
-  email: string;
-  phone: string;
+    id?: number;
+    companyName: string;
+    contactPerson: string;
+    email: string;
+    phone: string;
 };
 
 export default function SupplierForm({ onSubmitted, formId, handleForm }: { onSubmitted?: () => void, formId: string, handleForm: (data: SupplierPayload) => void }) {
 
-    const {editingSupplier} = useEditingSupplier()
+    const { editingSupplier } = useEditingSupplier()
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()

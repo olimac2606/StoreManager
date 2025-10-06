@@ -1,9 +1,9 @@
 import Card from "../components/Card"
 import SalesIcon from "../utils/icons/SalesIcon"
-import ProductsCard from "../components/ProductsCard"
-import ProductCard from "../components/ProductCard"
-import CurrentSaleCard from "../components/CurrentSaleCard"
-import PaymentCard from "../components/PaymentCard"
+import ProductsCard from "../components/Sales/ProductsCard"
+import ProductCard from "../components/Sales/ProductCard"
+import CurrentSaleCard from "../components/Sales/CurrentSaleCard"
+import PaymentCard from "../components/Sales/PaymentCard"
 import { useSelectedProducts } from "../contexts/SelectedProductsContext"
 import type { Product } from "@/types/product"
 

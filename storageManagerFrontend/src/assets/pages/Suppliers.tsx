@@ -3,9 +3,9 @@ import CrossIcon from "../utils/icons/CrossIcon"
 import { InputGroup, Input } from "@chakra-ui/react"
 import Card from "../components/Card"
 import SearchIcon from "../utils/icons/SearchIcon"
-import SuppliersTable from "../components/SuppliersTable"
+import SuppliersTable from "../components/Suppliers/SuppliersTable"
 import { useState, useMemo } from "react"
-import SupplierForm from "../components/SupplierForm"
+import SupplierForm from "../components/Suppliers/SupplierForm"
 
 export default function Suppliers() {
     const headers: string[] = [
@@ -18,17 +18,17 @@ export default function Suppliers() {
 
     const suppliers = [
         { id: 1, name: "Tech Supplies Co.", contact: "Alice Johnson", email: "alijohn@gmail.com", phone: "555-1234" },
-        { id: 2, name: "Home Goods Inc.", contact: "Bob Smith", email: "bobsmi@gmail.com" , phone: "555-5678" },
-        { id: 3, name: "Fashion Hub", contact: "Cathy Lee", email: "catlee@gmail.com" , phone: "555-8765" },
-        { id: 4, name: "Office Essentials", contact: "David Brown", email: "dabro@gmail.com" , phone: "555-4321" },
-        { id: 5, name: "Gadget World", contact: "Eva Green", email: "evagre@gmail.com" , phone: "555-6789" },
-        { id: 6, name: "Kitchen Kings", contact: "Frank White", email: "frawhi@gmail.com" , phone: "555-9876" },
-        { id: 7, name: "Outdoor Adventures", contact: "Grace Black", email: "grabla@gmail.com" , phone: "555-5432" },
-        { id: 8, name: "Book Nook", contact: "Hank Blue", email: "hanblu@gmail.com" , phone: "555-2109" },
-        { id: 9, name: "Toy Land", contact: "Ivy Red", email: "ivyred@gmail.com" , phone: "555-6543" },
-        { id: 10, name: "Pet Paradise", contact: "Jack Gray", email: "jacgra@gmail.com" , phone: "555-3210" },
-        { id: 11, name: "Auto Parts Plus", contact: "Karen Yellow", email: "karyel@gmail.com" , phone: "555-7890" },
-        { id: 12, name: "Beauty Bliss", contact: "Leo Purple", email: "leopur@gmail.com" , phone: "555-0987" },
+        { id: 2, name: "Home Goods Inc.", contact: "Bob Smith", email: "bobsmi@gmail.com", phone: "555-5678" },
+        { id: 3, name: "Fashion Hub", contact: "Cathy Lee", email: "catlee@gmail.com", phone: "555-8765" },
+        { id: 4, name: "Office Essentials", contact: "David Brown", email: "dabro@gmail.com", phone: "555-4321" },
+        { id: 5, name: "Gadget World", contact: "Eva Green", email: "evagre@gmail.com", phone: "555-6789" },
+        { id: 6, name: "Kitchen Kings", contact: "Frank White", email: "frawhi@gmail.com", phone: "555-9876" },
+        { id: 7, name: "Outdoor Adventures", contact: "Grace Black", email: "grabla@gmail.com", phone: "555-5432" },
+        { id: 8, name: "Book Nook", contact: "Hank Blue", email: "hanblu@gmail.com", phone: "555-2109" },
+        { id: 9, name: "Toy Land", contact: "Ivy Red", email: "ivyred@gmail.com", phone: "555-6543" },
+        { id: 10, name: "Pet Paradise", contact: "Jack Gray", email: "jacgra@gmail.com", phone: "555-3210" },
+        { id: 11, name: "Auto Parts Plus", contact: "Karen Yellow", email: "karyel@gmail.com", phone: "555-7890" },
+        { id: 12, name: "Beauty Bliss", contact: "Leo Purple", email: "leopur@gmail.com", phone: "555-0987" },
     ]
     const [copySuppliers, setCopySuppliers] = useState(suppliers)
     const [inputValue, setInputValue] = useState("")
@@ -45,7 +45,7 @@ export default function Suppliers() {
         setCopySuppliers(prev => prev.filter(supplier => supplier.id !== id))
     }
 
-    const handleForm = (data: { id: number, companyName: string, contactPerson: string, email: string, phone: string }) => {
+    const handleForm = (data: { id?: number, companyName: string, contactPerson: string, email: string, phone: string }) => {
         const newSupplier = {
             id: data.id ? data.id : copySuppliers.length > 0 ? copySuppliers.length + 1 : 1,
             name: data.companyName,
@@ -76,7 +76,7 @@ export default function Suppliers() {
                     formId="supplierForm"
                 >
                     <CrossIcon color="#FFFFFF" size="10" />
-                    <SupplierForm formId="supplierForm" handleForm={handleForm}/>
+                    <SupplierForm formId="supplierForm" handleForm={handleForm} />
                 </DialogChakra>
             </div>
             <Card minHeight="min-h-auto">
@@ -86,7 +86,7 @@ export default function Suppliers() {
             </Card>
             <Card>
                 <h2 className="text-[26px] font-[500]">Supplier Database</h2>
-                <SuppliersTable onDelete={onDelete} headers={headers} suppliers={filteredSuppliers}/>
+                <SuppliersTable onDelete={onDelete} headers={headers} suppliers={filteredSuppliers} />
             </Card>
         </div>
     )

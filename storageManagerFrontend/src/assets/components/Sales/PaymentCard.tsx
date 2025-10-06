@@ -1,8 +1,8 @@
 import { InputGroup, NumberInput } from "@chakra-ui/react"
-import DollarIcon from "../utils/icons/DollarIcon"
+import DollarIcon from "@/assets/utils/icons/DollarIcon"
 import { Button } from "@chakra-ui/react"
-import Change from "./Change"
-import { useSelectedProducts } from "../contexts/SelectedProductsContext"
+import Change from "../Change"
+import { useSelectedProducts } from "@/assets/contexts/SelectedProductsContext"
 import { useState } from "react"
 import { toaster } from "@/components/ui/toaster"
 
@@ -61,8 +61,8 @@ export default function PaymentCard() {
                             duration: 5000,
                         })
                     }
-                }} 
-                disabled={selectedProducts.length === 0 || amountReceive === 0 || isNaN(amountReceive)} className="bg-[#4ADE80] w-[100%]">
+                }}
+                    disabled={selectedProducts.length === 0 || amountReceive === 0 || isNaN(amountReceive)} className="bg-[#4ADE80] w-[100%]">
                     Complete Sale
                 </Button>
             </div>

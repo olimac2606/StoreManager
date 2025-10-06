@@ -1,28 +1,28 @@
 import { Button } from "@chakra-ui/react"
-import CrossIcon from "../utils/icons/CrossIcon"
-import MinusIcon from "../utils/icons/MinusIcon"
-import TrashIcon from "../utils/icons/TrashIcon"
-import { useSelectedProducts } from "../contexts/SelectedProductsContext"
+import CrossIcon from "@/assets/utils/icons/CrossIcon"
+import MinusIcon from "@/assets/utils/icons/MinusIcon"
+import TrashIcon from "@/assets/utils/icons/TrashIcon"
+import { useSelectedProducts } from "@/assets/contexts/SelectedProductsContext"
 
 export default function SaleLineItem({ productName, price, amount, id }: { productName: string, price: number, amount: number, id: number }) {
-    const {setSelectedProducts} = useSelectedProducts()
+    const { setSelectedProducts } = useSelectedProducts()
     const decrement = () => {
         setSelectedProducts(prev =>
-        prev.map(p =>
-            p.id === id
-            ? { ...p, amount: Math.max(0, (p.amount ?? 0) - 1) } // evita negativos y cubre amount opcional
-            : p
-        )
+            prev.map(p =>
+                p.id === id
+                    ? { ...p, amount: Math.max(0, (p.amount ?? 0) - 1) } // evita negativos y cubre amount opcional
+                    : p
+            )
         );
     };
 
     const increment = () => {
         setSelectedProducts(prev =>
-        prev.map(p =>
-            p.id === id
-            ? { ...p, amount: (p.amount ?? 0) + 1 }
-            : p
-        )
+            prev.map(p =>
+                p.id === id
+                    ? { ...p, amount: (p.amount ?? 0) + 1 }
+                    : p
+            )
         );
     };
 

@@ -1,5 +1,5 @@
-import ArrowDownIcon from "../utils/icons/ArrowDownIcon"
-import ArrowUpIcon from "../utils/icons/ArrowUpIcon"
+import ArrowDownIcon from "../../utils/icons/ArrowDownIcon"
+import ArrowUpIcon from "../../utils/icons/ArrowUpIcon"
 
 type StatCardProps = {
     title: string,

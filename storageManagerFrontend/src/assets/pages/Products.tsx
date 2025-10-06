@@ -3,11 +3,11 @@ import Card from "../components/Card"
 import { Input, InputGroup } from "@chakra-ui/react"
 import SearchIcon from "../utils/icons/SearchIcon"
 import SelectChakra from "../components/SelectChakra"
-import ProductsTable from "../components/ProductsTable"
+import ProductsTable from "../components/Products/ProductsTable"
 import { useState, useMemo } from "react"
 import DialogChakra from "../components/DialogChakra"
-import ProductForm from "../components/ProductForm"
-import type { CategoryValue, Option, ProductForm, ProductCategory, StatusValue, Product } from "@/types/product"
+import ProductForm from "../components/Products/ProductForm"
+import type { CategoryValue, Option, ProductFormType, ProductCategory, StatusValue, Product } from "@/types/product"
 import { useEditingProduct } from "../contexts/EditingProductContext"
 
 export default function Products() {
@@ -79,7 +79,7 @@ export default function Products() {
     sports: "Sports",
   };
 
-  const handleForm = (formData: ProductForm) => {
+  const handleForm = (formData: ProductFormType) => {
     let statusValue: StatusValue
     if (formData.stock > 20) {
       statusValue = "In Stock"
@@ -97,7 +97,7 @@ export default function Products() {
       stock: formData.stock,
       status: statusValue,
     }
-    
+
     if (editingProduct !== null) {
       if (editingProduct.id === unshiftToProducts.id) {
         setProducts(prev => prev.filter((product) => product.id !== editingProduct.id))
@@ -135,7 +135,7 @@ export default function Products() {
     )
   }
 
-  const {editingProduct} = useEditingProduct()
+  const { editingProduct } = useEditingProduct()
   return (
     <div className="px-[1.8rem] pt-[1rem] bg-[#FAFAFA]">
       <div className="flex items-center justify-between">

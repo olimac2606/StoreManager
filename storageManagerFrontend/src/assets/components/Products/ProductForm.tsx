@@ -1,11 +1,11 @@
 import { Field, Input, Stack, NumberInput } from "@chakra-ui/react"
-import SelectChakra from "./SelectChakra"
-import type { Option, ProductForm, Product } from "@/types/product";
-import { useEditingProduct } from "../contexts/EditingProductContext";
+import SelectChakra from "../SelectChakra";
+import type { Option, ProductFormType, Product } from "@/types/product";
+import { useEditingProduct } from "@/assets/contexts/EditingProductContext";
 import { isCategoryLabel, isCategoryKey, labelToValue, type CategoryKey, } from "@/types/categories"
 
 type Props = {
-    handleForm: (dataForm: ProductForm) => void;
+    handleForm: (dataForm: ProductFormType) => void;
     onSubmitted?: () => void;
     formId?: string;
     currentProducts: Product[];
@@ -20,7 +20,7 @@ export default function ProductForm({ handleForm, onSubmitted, formId, currentPr
         { label: "Sports", value: "sports" },
     ]
 
-    const {editingProduct } = useEditingProduct()
+    const { editingProduct } = useEditingProduct()
 
     const initialName = editingProduct?.name ?? "";
     const initialPrice = editingProduct?.price ?? 0;
@@ -37,7 +37,7 @@ export default function ProductForm({ handleForm, onSubmitted, formId, currentPr
         if (!isCategoryKey(catRaw)) {
             return;
         }
-        const payload: ProductForm = {
+        const payload: ProductFormType = {
             id: editingProduct?.id ?? Math.max(0, ...currentProducts.map(p => p.id)) + 1,
             name: String(fd.get("name") ?? "").trim(),
             category: catRaw,
@@ -55,7 +55,7 @@ export default function ProductForm({ handleForm, onSubmitted, formId, currentPr
             <Stack>
                 <Field.Root>
                     <Field.Label>Product Name</Field.Label>
-                    <Input name="name" defaultValue={initialName}/>
+                    <Input name="name" defaultValue={initialName} />
                     <Field.ErrorText></Field.ErrorText>
                 </Field.Root>
 

@@ -15,7 +15,7 @@ export type Option = {
 
 export type CategoryKey = Exclude<CategoryValue, "all">;
 
-export type ProductForm = {
+export type ProductFormType = {
   id: number;
   name: string;
   category: CategoryKey;

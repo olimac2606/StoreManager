@@ -1,6 +1,6 @@
-import Card from "./Card"
+import Card from "../Card"
 import { Button } from "@chakra-ui/react"
-import CrossIcon from "../utils/icons/CrossIcon"
+import CrossIcon from "@/assets/utils/icons/CrossIcon"
 
 type Props = {
     name: string;
@@ -9,7 +9,7 @@ type Props = {
     price: number
 }
 
-export default function ProductCard({ name, category, stock, price}: Props) {
+export default function ProductCard({ name, category, stock, price }: Props) {
     return (
         <Card withoutMargin={true} hover="hover:bg-[#EEFCF3]" pointer="cursor-pointer" minWidth="min-w-[183px]">
             <div>

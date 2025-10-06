@@ -1,8 +1,8 @@
 import { Table } from "@chakra-ui/react"
-import ClearButton from "./ClearButton"
-import EditButton from "./EditButton"
+import ClearButton from "../ClearButton";
+import EditButton from "../EditButton";
 import type { Product } from "@/types/product";
-import { useEditingProduct } from "../contexts/EditingProductContext";
+import { useEditingProduct } from "@/assets/contexts/EditingProductContext";
 
 type Props = {
     headers: string[],
@@ -11,8 +11,8 @@ type Props = {
 }
 
 export default function ProductsTable({ headers, products, onDelete }: Props) {
-    
-    const {setEditingProduct} = useEditingProduct()
+
+    const { setEditingProduct } = useEditingProduct()
 
     return (
         <Table.Root>

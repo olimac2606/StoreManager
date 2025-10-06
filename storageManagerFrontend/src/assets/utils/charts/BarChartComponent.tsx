@@ -6,7 +6,6 @@ import {
     Tooltip,
     XAxis,
     YAxis,
-    ResponsiveContainer,
 } from "recharts"
 
 export default function BarChartComponent({
