@@ -118,7 +118,7 @@ export default function Products() {
     }
 
     deleteProduct()
-  })
+  }, [onDeleteProduct])
 
   useEffect(() => {
     if (!onPatch) return

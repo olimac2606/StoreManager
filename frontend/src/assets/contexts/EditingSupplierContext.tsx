@@ -1,12 +1,5 @@
 import React, { createContext, useState } from 'react';
-
-type Supplier = {
-  id: number;
-  name: string;
-  contact: string;
-  email: string;
-  phone: string;
-};
+import type { Supplier } from '@/types/suppliers';
 
 type EditingSupplierContextValue = {
   editingSupplier: Supplier | null;
