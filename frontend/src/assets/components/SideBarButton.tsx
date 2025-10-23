@@ -1,5 +1,14 @@
+// Chakra UI Button component for sidebar navigation
 import { Button } from "@chakra-ui/react";
 
+/**
+ * Sidebar navigation button component
+ * Renders a styled button for sidebar navigation with active state styling
+ * Props:
+ *   - children: ReactNode containing the icon element
+ *   - name: optional text label for the button
+ *   - onSelected: boolean indicating if this button is currently selected/active
+ */
 export default function SideBarButton({ children, name, onSelected, }: { children: React.ReactNode, name?: string, onSelected?: boolean }) {
     return (
         <Button 

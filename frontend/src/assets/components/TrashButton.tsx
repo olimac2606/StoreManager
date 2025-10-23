@@ -1,6 +1,13 @@
+// Icon and UI component imports
 import TrashIcon from "../utils/icons/TrashIcon"
 import { Button } from "@chakra-ui/react"
 
+/**
+ * Trash button component for delete actions
+ * Renders a styled button with trash icon for triggering delete operations
+ * Props:
+ *   - text: optional text label to display alongside the trash icon
+ */
 export default function TrashButton({ text }: { text?: string }) {
   return (
     <div>

@@ -1,7 +1,16 @@
+// Icon and UI component imports
 import EditIcon from "../utils/icons/EditIcon"
 import { Button } from "@chakra-ui/react"
 import { forwardRef } from "react"
 
+/**
+ * Edit button component for edit actions
+ * Renders a styled button with edit icon for triggering edit operations
+ * Uses forwardRef to support ref forwarding for form integration
+ * Props:
+ *   - text: optional text label to display alongside the edit icon
+ *   - ...props: additional Button component props
+ */
 const EditButton = forwardRef<HTMLButtonElement, { text?: string } & React.ComponentProps<typeof Button>>(
   ({ text, ...props }, ref) => {
     return (

@@ -1,23 +1,41 @@
+// Context hook and type definitions
 import { useCategories } from "@/assets/contexts/CategoriesContext"
 import type { Category, NewCategory } from "@/types/product"
+
+// Chakra UI components for form and table handling
 import { Input, Popover, Text } from "@chakra-ui/react"
+import { Table } from "@chakra-ui/react"
+
+// HTTP client and React hooks
 import axios from "axios"
 import { useEffect, useState } from "react"
-import { Table } from "@chakra-ui/react"
+
+// Action button components and utilities
 import TrashButton from "../TrashButton"
 import EditButton from "../EditButton"
 import { toaster } from "@/components/ui/toaster"
 import DeleteDialog from "../DeleteDialog"
 
+/**
+ * Categories manager component for CRUD operations on product categories
+ * Provides interface for creating, editing, and deleting categories with API integration
+ * Manages category state and handles all category-related operations
+ */
 export default function CategoriesManager() {
+  // Context hook for categories state management
   const { categories, setCategories } = useCategories()
+  
+  // State for new category creation
   const [categoryName, setCategoryName] = useState("")
   const [createCategory, setCreateCategory] = useState(false)
+  
+  // State for category editing
   const [editCategory, setEditCategory] = useState(false)
   const [editCategoryId, setEditCategoryId] = useState(0)
   const [inputEdit, setInputEdit] = useState("")
   const [openPopoverId, setOpenPopoverId] = useState<number | null>(null)
 
+  // Handle category creation with API call and user feedback
   useEffect(() => {
     if (!createCategory || !categoryName.trim()) return
 
@@ -54,6 +72,7 @@ export default function CategoriesManager() {
     addCategory()
   }, [createCategory, categoryName, setCategories])
 
+  // Handle category updates with API call and user feedback
   useEffect(() => {
     if (inputEdit.trim() === "" || !editCategory) return
     const editCategoryObject: NewCategory = {
@@ -81,6 +100,7 @@ export default function CategoriesManager() {
     setEditCategory(false)
   }, [editCategory])
 
+  // Handle category deletion with API call and user feedback
   const onDelete = (categoryId: number) => {
     const deleteCategory = async () => {
       try {
@@ -108,6 +128,7 @@ export default function CategoriesManager() {
     deleteCategory()
   }
 
+  // Handle category editing initialization
   const onEdit = (category: Category) => {
     setInputEdit(category.name)
     setEditCategoryId(category.id)
@@ -115,6 +136,7 @@ export default function CategoriesManager() {
 
   return (
     <div>
+      {/* Category creation form */}
       <div className="flex flex-col gap-[0.8rem]">
         <span>Type a category name and press Enter to add it.</span>
         <Input
@@ -130,6 +152,7 @@ export default function CategoriesManager() {
         />
       </div>
 
+      {/* Categories table with edit and delete actions */}
       <Table.Root>
         <Table.Caption />
         <Table.Body>
@@ -138,6 +161,7 @@ export default function CategoriesManager() {
               <Table.Cell>{category.name}</Table.Cell>
               <Table.Cell>
                 <div className="flex gap-[10px] justify-end">
+                  {/* Edit category popover */}
                   <Popover.Root
                     open={openPopoverId === category.id}
                     onOpenChange={(e) => {
@@ -174,6 +198,8 @@ export default function CategoriesManager() {
                       </Popover.Content>
                     </Popover.Positioner>
                   </Popover.Root>
+                  
+                  {/* Delete category dialog */}
                   <DeleteDialog itemName={category.name} onDelete={onDelete} idItem={category.id}>
                     <span>
                       <TrashButton />

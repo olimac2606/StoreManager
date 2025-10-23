@@ -1,19 +1,36 @@
+// UI components for layout and form handling
 import Card from "../components/Card"
 import { Input, InputGroup } from "@chakra-ui/react"
 import SearchIcon from "../utils/icons/SearchIcon"
 import SelectChakra from "../components/SelectChakra"
 import ProductsTable from "../components/Products/ProductsTable"
+
+// React hooks for state management and side effects
 import { useState, useMemo, useEffect } from "react"
-import type { ProductFormType, StatusValue, Product } from "@/types/product"
+
+// Type definitions for product management
+import type { ProductFormType, StatusValue, Product, Category } from "@/types/product"
+
+// Context hooks for global state management
 import { useEditingProduct } from "../contexts/EditingProductContext"
-import axios from "axios"
 import { useCategories } from "../contexts/CategoriesContext"
+
+// Dialog components for product and category management
 import ProductDialog from "../components/Products/ProductDialog"
 import CategoryDialog from "../components/Category/CategoryDialog"
-import { toaster } from "@/components/ui/toaster"
 
+// Custom Hooks for http requests
+import { useFetch } from "@/hooks/useFetch"
+import { usePost } from "@/hooks/usePost"
+import { useDelete } from "@/hooks/useDelete"
+import { usePatch } from "@/hooks/usePatch"
+
+/**
+ * Products page component for managing store inventory
+ * Provides CRUD operations for products with search, filter, and category management
+ */
 export default function Products() {
-
+  // Table column headers for product display
   const headers: string[] = [
     "Product",
     "Category",
@@ -23,17 +40,75 @@ export default function Products() {
     "Actions",
   ]
 
-  const [products, setProducts] = useState<Product[]>([])
+  // State management for products and categories
   const { categories, setCategories } = useCategories()
+
+  // Filter and search state
   const [selectedCategory, setSelectedCategory] = useState<string>("0")
   const [inputValue, setInputValue] = useState("")
+
+  //useState for saving products on frontend
+  const [products, setProducts] = useState<Product[]>([])
+
+  // API operation state for async operations
   const [onPost, setOnPost] = useState<Product | undefined>(undefined)
   const [onPatch, setOnPatch] = useState<Product | undefined>(undefined)
   const [onDeleteProduct, setOnDeleteProduct] = useState<number>(0)
 
+  //Hook Fetch initial data for products
+  const { data: fethcProducts } = useFetch<Product[]>("products")
+  useEffect(() => {
+    if (fethcProducts) {
+      setProducts(fethcProducts)
+    }
+  }, [fethcProducts])
+
+  //Hook Fetch initial data for categories
+  const { data: fetchCategories } = useFetch<Category[] | null>("categories")
+  useEffect(() => {
+    if (fetchCategories) {
+      setCategories(fetchCategories)
+    }
+  }, [fetchCategories])
+
+  //Active hook useDelete when onDeleteProduct change 
+  const { data: deleteAffected, deleteTrigger } = useDelete("products", "Product", onDeleteProduct)
+  useEffect(() => {
+    if (deleteAffected === undefined) return
+    if (deleteAffected && deleteAffected > 0) {
+      setProducts((prev) => prev.filter((product) => product.id !== onDeleteProduct))
+    }
+  }, [deleteTrigger])
+
+  //Active hook usePost when onPost change 
+  const { data: product } = usePost("products", "Product", onPost)
+  useEffect(() => {
+    if (product) {
+      setProducts((prev) => [product, ...prev])
+    }
+  }, [product])
+
+  //Active hook useDelete when onDeleteProduct change 
+  const { data: patchAffected, patchTrigger } = usePatch("products", "Product", onPatch, onPatch?.id)
+  useEffect(() => {
+    if (patchAffected === undefined) return
+    if (patchAffected && patchAffected > 0) {
+      if (patchAffected && patchAffected > 0 && onPatch) {
+        setProducts((prev) => {
+          const index = prev.findIndex((product) => product.id === onPatch.id)
+          if (index === -1) return prev
+          return [...prev.slice(0, index), onPatch, ...prev.slice(index + 1)]
+        })
+      }
+    }
+  }, [patchTrigger])
+
+  // Context for editing product state
   const { editingProduct } = useEditingProduct()
 
+  // Handle product form submission with automatic status calculation
   const handleForm = (formData: ProductFormType) => {
+    // Calculate product status based on stock levels
     let statusValue: StatusValue
     if (formData.stock > 20) {
       statusValue = "In Stock"
@@ -52,6 +127,7 @@ export default function Products() {
       status: statusValue,
     }
 
+    // Determine if this is an update or create operation
     if (editingProduct !== null) {
       setOnPatch(newProduct)
       return
@@ -59,17 +135,20 @@ export default function Products() {
     setOnPost(newProduct)
   }
 
+  // Handle category filter selection
   const handleChangeCategory = (value: string) => {
     setSelectedCategory(value)
   }
 
+  // Handle search input with case-insensitive filtering
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value.trim().toLowerCase())
   }
 
+  // Filter products based on search term and category selection
   const filteredProducts = useMemo(() => {
+    if (!products) return []; //Verify if products get an array
     const input = inputValue.trim().toLowerCase()
-
     return products.filter(product => {
       const matchesName = product.name.toLowerCase().includes(input)
       const matchesCategory = selectedCategory === "0" ? true : product.categoryId === Number(selectedCategory)
@@ -77,102 +156,9 @@ export default function Products() {
     })
   }, [products, inputValue, selectedCategory])
 
-  const onDelete = (idProduct: number) => {
-    setOnDeleteProduct(idProduct)
-  }
-
-  useEffect(() => {
-    if (!onDeleteProduct) return
-    const deleteProduct = async () => {
-      try {
-        await axios.delete(`http://localhost:3000/products/${onDeleteProduct}`)
-        toaster.create({
-          description: "Product delete succesfully",
-          type: "warning"
-        })
-      } catch (error) {
-        console.log("Error deleting product", error)
-        toaster.create({
-          description: "There was an error deleting product",
-          type: "error"
-        })
-      }
-    }
-
-    deleteProduct()
-  }, [onDeleteProduct])
-
-  useEffect(() => {
-    if (!onPatch) return
-
-    const patchProduct = async () => {
-      try {
-        await axios.patch(`http://localhost:3000/products/${onPatch.id}`, onPatch)
-        toaster.create({
-          description: "Product updated succesfully",
-          type: "success"
-        })
-      } catch (error) {
-        console.log("Error updating product", error)
-        toaster.create({
-          description: "There was an error updating product",
-          type: "error"
-        })
-      }
-    }
-
-    patchProduct()
-
-  }, [onPatch])
-
-  useEffect(() => {
-    if (!onPost) return
-
-    const postProduct = async () => {
-      try {
-        const res = await axios.post(`http://localhost:3000/products/`, onPost)
-        if (res.data.response) {
-          toaster.create({
-            description: res.data.response,
-            type: "error"
-          })
-          return
-        }
-        toaster.create({
-          description: "Product created succesfully",
-          type: "success"
-        })
-      } catch (error) {
-        console.log("Error creating product", error)
-        toaster.create({
-          description: "There was an error creating product",
-          type: "error"
-        })
-      }
-    }
-
-    postProduct()
-
-  }, [onPost])
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [productsRes, categoriesRes] = await Promise.all([
-          axios.get("http://localhost:3000/products/"),
-          axios.get("http://localhost:3000/categories/"),
-        ])
-        setProducts(productsRes.data)
-        setCategories(categoriesRes.data)
-      } catch (error) {
-        console.error("Error fetching data:", error)
-      }
-    }
-    fetchData()
-  }, [products, categories])
-
   return (
     <div className="px-[1.8rem] pt-[1rem] bg-[#FAFAFA]">
+      {/* Page header with title and action buttons */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-[30px] font-[700]">Products</h1>
@@ -184,6 +170,7 @@ export default function Products() {
         </div>
       </div>
 
+      {/* Search and filter controls */}
       <Card minHeight="min-h-auto">
         <div className="grid grid-cols-[4fr_1fr] gap-[1rem]">
           <InputGroup startElement={<SearchIcon color="#667085" size="20" />}>
@@ -201,9 +188,10 @@ export default function Products() {
         </div>
       </Card>
 
+      {/* Product inventory table */}
       <Card>
         <h2 className="text-[26px] font-[500]">Product Inventory</h2>
-        <ProductsTable products={filteredProducts} headers={headers} onDelete={onDelete} />
+        <ProductsTable products={filteredProducts} headers={headers} onDelete={(idProduct) => setOnDeleteProduct(idProduct)} />
       </Card>
     </div>
   )
