@@ -5,64 +5,79 @@ import { useEditingProduct } from "../contexts/EditingProductContext"
 import { useEditingSupplier } from "../contexts/EditingSupplierContext"
 
 type DialogProps = {
-    buttonText: string,
-    children: ReactNode,
-    buttonStyles: string,
-    dialogTitle: string,
-    saveButtonStyles: string,
-    formId: string,
+  buttonText: string,
+  children: ReactNode,
+  buttonStyles: string,
+  dialogTitle: string,
+  saveButtonStyles: string,
+  formId: string,
+  listenEditingProduct?: boolean
+  listenEditingSupplier?: boolean
+  isCategoryDialog?: boolean
 }
 
-export default function DialogChakra({ buttonText, children, buttonStyles, dialogTitle, saveButtonStyles, formId}: DialogProps) {
-    const items = React.Children.toArray(children)
-    const [localOpen, setLocalOpen] = useState(false);
-    const {editingProduct, setEditingProduct} = useEditingProduct()
-    const {editingSupplier, setEditingSupplier} = useEditingSupplier()
-    let open = localOpen || editingProduct !== null || editingSupplier !== null
-    const body = cloneElement(items[1] as React.ReactElement<any>, {
-        onSubmitted: () => {
-            setLocalOpen(false);
-            setEditingProduct(null);
-            setEditingSupplier(null);
-        },
-        formId: formId,
-    })
-    return (
-        <Dialog.Root open={open} onOpenChange={(e) => {
-            setLocalOpen(e.open);
-            if (!e.open){
-                setEditingProduct(null)
-                setEditingSupplier(null) 
-            } 
-        }}>
-            <Dialog.Trigger asChild>
-                <Button size="sm" className={buttonStyles}>
-                    {items[0]}
-                    {buttonText}
-                </Button>
-            </Dialog.Trigger>
-            <Portal>
-                <Dialog.Backdrop />
-                <Dialog.Positioner>
-                    <Dialog.Content>
-                        <Dialog.Header>
-                            <Dialog.Title>{dialogTitle}</Dialog.Title>
-                        </Dialog.Header>
-                        <Dialog.Body>
-                            {body}
-                        </Dialog.Body>
-                        <Dialog.Footer>
-                            <Dialog.ActionTrigger asChild>
-                                <Button variant="outline">Cancel</Button>
-                            </Dialog.ActionTrigger>
-                            <Button type="submit" form={formId} className={saveButtonStyles}>Save</Button>
-                        </Dialog.Footer>
-                        <Dialog.CloseTrigger asChild>
-                            <CloseButton size="sm" />
-                        </Dialog.CloseTrigger>
-                    </Dialog.Content>
-                </Dialog.Positioner>
-            </Portal>
-        </Dialog.Root>
-    )
+export default function DialogChakra({
+  buttonText,
+  children,
+  buttonStyles,
+  dialogTitle,
+  saveButtonStyles,
+  formId,
+  listenEditingProduct = false,
+  listenEditingSupplier = false,
+  isCategoryDialog = false
+}: DialogProps) {
+  const items = React.Children.toArray(children)
+  const [localOpen, setLocalOpen] = useState(false);
+  const { editingProduct, setEditingProduct } = useEditingProduct()
+  const { editingSupplier, setEditingSupplier } = useEditingSupplier()
+  const open = localOpen || (listenEditingProduct && editingProduct !== null) || (listenEditingSupplier && editingSupplier !== null)
+  const body = cloneElement(items[1] as React.ReactElement<any>, {
+    onSubmitted: () => {
+      setLocalOpen(false);
+      setEditingProduct(null);
+      setEditingSupplier(null);
+    },
+    formId: formId,
+  })
+  return (
+    <Dialog.Root open={open} onOpenChange={(e) => {
+      setLocalOpen(e.open);
+      if (!e.open) {
+        setEditingProduct(null)
+        setEditingSupplier(null)
+      }
+    }}>
+      <Dialog.Trigger asChild>
+        <Button size="sm" className={buttonStyles}>
+          {items[0]}
+          {buttonText}
+        </Button>
+      </Dialog.Trigger>
+      <Portal>
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+          <Dialog.Content>
+            <Dialog.Header>
+              <Dialog.Title>{dialogTitle}</Dialog.Title>
+            </Dialog.Header>
+            <Dialog.Body>
+              {body}
+            </Dialog.Body>
+            <Dialog.Footer>
+              <Dialog.ActionTrigger asChild>
+                <Button variant="outline">Cancel</Button>
+              </Dialog.ActionTrigger>
+              {!isCategoryDialog && (
+                <Button type="submit" form={formId} className={saveButtonStyles}>Save</Button>
+              )}
+            </Dialog.Footer>
+            <Dialog.CloseTrigger asChild>
+              <CloseButton size="sm" />
+            </Dialog.CloseTrigger>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog.Root>
+  )
 }

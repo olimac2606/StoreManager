@@ -1,25 +1,18 @@
-import CrossIcon from "../utils/icons/CrossIcon"
 import Card from "../components/Card"
 import { Input, InputGroup } from "@chakra-ui/react"
 import SearchIcon from "../utils/icons/SearchIcon"
 import SelectChakra from "../components/SelectChakra"
 import ProductsTable from "../components/Products/ProductsTable"
 import { useState, useMemo, useEffect } from "react"
-import DialogChakra from "../components/DialogChakra"
-import ProductForm from "../components/Products/ProductForm"
-import type { CategoryValue, Option, ProductFormType, ProductCategory, StatusValue, Product } from "@/types/product"
+import type { ProductFormType, StatusValue, Product } from "@/types/product"
 import { useEditingProduct } from "../contexts/EditingProductContext"
 import axios from "axios"
+import { useCategories } from "../contexts/CategoriesContext"
+import ProductDialog from "../components/Products/ProductDialog"
+import CategoryDialog from "../components/Category/CategoryDialog"
+import { toaster } from "@/components/ui/toaster"
 
 export default function Products() {
-
-  const options: Option[] = [
-    { label: "All Categories", value: "all" },
-    { label: "Electronics", value: "electronics" },
-    { label: "Clothing", value: "clothing" },
-    { label: "Home & Garden", value: "homeAndGarden" },
-    { label: "Sports", value: "sports" },
-  ]
 
   const headers: string[] = [
     "Product",
@@ -31,17 +24,14 @@ export default function Products() {
   ]
 
   const [products, setProducts] = useState<Product[]>([])
-  const [category, setCategory] = useState<CategoryValue>("all")
+  const { categories, setCategories } = useCategories()
+  const [selectedCategory, setSelectedCategory] = useState<string>("0")
   const [inputValue, setInputValue] = useState("")
   const [onPost, setOnPost] = useState<Product | undefined>(undefined)
   const [onPatch, setOnPatch] = useState<Product | undefined>(undefined)
   const [onDeleteProduct, setOnDeleteProduct] = useState<number>(0)
-  const categoryMap: Record<Exclude<CategoryValue, "all">, ProductCategory> = {
-    electronics: "Electronics",
-    clothing: "Clothing",
-    homeAndGarden: "Home & Garden",
-    sports: "Sports",
-  };
+
+  const { editingProduct } = useEditingProduct()
 
   const handleForm = (formData: ProductFormType) => {
     let statusValue: StatusValue
@@ -53,29 +43,24 @@ export default function Products() {
       statusValue = "Low Stock"
     }
 
-    const unshiftToProducts: Product = {
+    const newProduct: Product = {
       id: formData.id,
       name: formData.name,
-      category: categoryMap[formData.category],
+      categoryId: formData.categoryId,
       price: formData.price,
       stock: formData.stock,
       status: statusValue,
     }
 
     if (editingProduct !== null) {
-      if (editingProduct.id === unshiftToProducts.id) {
-        setProducts(prev => prev.filter((product) => product.id !== editingProduct.id))
-        setProducts(prev => [unshiftToProducts, ...prev])
-        setOnPatch(unshiftToProducts)
-        return
-      }
+      setOnPatch(newProduct)
+      return
     }
-    setOnPost(unshiftToProducts)
-    setProducts(prev => [unshiftToProducts, ...prev])
+    setOnPost(newProduct)
   }
 
-  const handleChangeCategory = (category: CategoryValue) => {
-    setCategory(category);
+  const handleChangeCategory = (value: string) => {
+    setSelectedCategory(value)
   }
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,37 +68,34 @@ export default function Products() {
   }
 
   const filteredProducts = useMemo(() => {
-    const input = inputValue.trim().toLowerCase();
+    const input = inputValue.trim().toLowerCase()
 
-    return products.filter((product) => {
-      const matchesName = product.name.toLowerCase().startsWith(input);
-
-      const matchesCategory =
-        category === "all"
-          ? true
-          : product.category === categoryMap[category];
-
-      return matchesName && matchesCategory;
-    });
-  }, [products, inputValue, category]);
+    return products.filter(product => {
+      const matchesName = product.name.toLowerCase().includes(input)
+      const matchesCategory = selectedCategory === "0" ? true : product.categoryId === Number(selectedCategory)
+      return matchesName && matchesCategory
+    })
+  }, [products, inputValue, selectedCategory])
 
   const onDelete = (idProduct: number) => {
-    setProducts(
-      prev => prev.filter(product => product.id !== idProduct)
-    )
     setOnDeleteProduct(idProduct)
   }
 
-  const { editingProduct } = useEditingProduct()
-
   useEffect(() => {
-    if (onDeleteProduct === 0) return
-
+    if (!onDeleteProduct) return
     const deleteProduct = async () => {
       try {
         await axios.delete(`http://localhost:3000/products/${onDeleteProduct}`)
+        toaster.create({
+          description: "Product delete succesfully",
+          type: "warning"
+        })
       } catch (error) {
         console.log("Error deleting product", error)
+        toaster.create({
+          description: "There was an error deleting product",
+          type: "error"
+        })
       }
     }
 
@@ -122,40 +104,73 @@ export default function Products() {
 
   useEffect(() => {
     if (!onPatch) return
-    const patchProducts = async () => {
+
+    const patchProduct = async () => {
       try {
-        await axios.patch(`http://localhost:3000/products/${onPatch?.id}`, onPatch)
+        await axios.patch(`http://localhost:3000/products/${onPatch.id}`, onPatch)
+        toaster.create({
+          description: "Product updated succesfully",
+          type: "success"
+        })
       } catch (error) {
         console.log("Error updating product", error)
+        toaster.create({
+          description: "There was an error updating product",
+          type: "error"
+        })
       }
     }
-    patchProducts()
+
+    patchProduct()
+
   }, [onPatch])
 
   useEffect(() => {
     if (!onPost) return
-    const postProducts = async () => {
+
+    const postProduct = async () => {
       try {
-        await axios.post(`http://localhost:3000/products/`, onPost)
+        const res = await axios.post(`http://localhost:3000/products/`, onPost)
+        if (res.data.response) {
+          toaster.create({
+            description: res.data.response,
+            type: "error"
+          })
+          return
+        }
+        toaster.create({
+          description: "Product created succesfully",
+          type: "success"
+        })
       } catch (error) {
         console.log("Error creating product", error)
+        toaster.create({
+          description: "There was an error creating product",
+          type: "error"
+        })
       }
     }
-    postProducts()
+
+    postProduct()
+
   }, [onPost])
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/products/")
-        setProducts(res.data)
+        const [productsRes, categoriesRes] = await Promise.all([
+          axios.get("http://localhost:3000/products/"),
+          axios.get("http://localhost:3000/categories/"),
+        ])
+        setProducts(productsRes.data)
+        setCategories(categoriesRes.data)
       } catch (error) {
-        console.log("Error getting the products", error)
+        console.error("Error fetching data:", error)
       }
     }
+    fetchData()
+  }, [products, categories])
 
-    fetchProducts()
-  }, [])
   return (
     <div className="px-[1.8rem] pt-[1rem] bg-[#FAFAFA]">
       <div className="flex items-center justify-between">
@@ -163,27 +178,31 @@ export default function Products() {
           <h1 className="text-[30px] font-[700]">Products</h1>
           <span className="text-[#667085]">Manage your store inventory</span>
         </div>
-        <DialogChakra
-          buttonStyles="bg-[#5CE18C]"
-          buttonText="Add Product"
-          dialogTitle="Create Product"
-          saveButtonStyles="bg-[#5CE18C]"
-          formId="productForm"
-        >
-          <CrossIcon color="#FFFFFF" size="10" />
-          <ProductForm handleForm={handleForm} currentProducts={products} />
-        </DialogChakra>
+        <div className="flex gap-[1rem]">
+          <ProductDialog handleForm={handleForm} />
+          <CategoryDialog />
+        </div>
       </div>
+
       <Card minHeight="min-h-auto">
         <div className="grid grid-cols-[4fr_1fr] gap-[1rem]">
           <InputGroup startElement={<SearchIcon color="#667085" size="20" />}>
-            <Input onChange={handleInput} className="bg-[#FAFAFA]" placeholder="Search products..." />
+            <Input
+              onChange={handleInput}
+              className="bg-[#FAFAFA]"
+              placeholder="Search products..."
+            />
           </InputGroup>
-          <SelectChakra onChangeCategory={handleChangeCategory} option={options} />
+          <SelectChakra
+            onChangeCategory={handleChangeCategory}
+            option={[{ id: 0, name: "All" }, ...categories]}
+            defaultValue={"0"}
+          />
         </div>
       </Card>
+
       <Card>
-        <h2 className="text-[26px] font-[500]">Product Invetory</h2>
+        <h2 className="text-[26px] font-[500]">Product Inventory</h2>
         <ProductsTable products={filteredProducts} headers={headers} onDelete={onDelete} />
       </Card>
     </div>

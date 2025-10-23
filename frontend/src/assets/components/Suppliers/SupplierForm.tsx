@@ -20,8 +20,12 @@ export default function SupplierForm({ onSubmitted, formId, handleForm }: { onSu
     onSubmitted?.()
     e.currentTarget.reset()
   }
+
+  const preventEnterSubmit = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === "Enter") e.preventDefault()
+  }
   return (
-    <form id={formId} onSubmit={handleSubmit}>
+    <form id={formId} onSubmit={handleSubmit} onKeyDown={preventEnterSubmit}>
       <Stack>
         <Field.Root>
           <Field.Label>Company Name</Field.Label>

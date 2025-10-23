@@ -27,7 +27,9 @@ export class ProductsService {
   }
 
   findAll() {
-    return this.ProductRepository.find();
+    return this.ProductRepository.find({
+      order: { id: 'DESC' },
+    });
   }
 
   async findOne(id: number) {

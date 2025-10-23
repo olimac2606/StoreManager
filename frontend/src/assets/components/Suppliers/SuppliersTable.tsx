@@ -1,8 +1,9 @@
 import { Table } from "@chakra-ui/react"
-import ClearButton from "../ClearButton"
+import TrashButton from "../TrashButton"
 import EditButton from "../EditButton"
 import { useEditingSupplier } from "@/assets/contexts/EditingSupplierContext"
 import type { Supplier } from "@/types/suppliers"
+import DeleteDialog from "../DeleteDialog"
 
 
 type Props = {
@@ -36,9 +37,11 @@ export default function SuppliersTable({ headers, suppliers, onDelete }: Props) 
                 <div onClick={() => setEditingSupplier(supplier)}>
                   <EditButton />
                 </div>
-                <div onClick={() => onDelete(supplier.id)}>
-                  <ClearButton />
-                </div>
+                <DeleteDialog onDelete={onDelete} idItem={supplier.id} itemName={`${supplier.companyName} (${supplier.contactName})`}>
+                  <span>
+                    <TrashButton />
+                  </span>
+                </DeleteDialog>
               </div>
             </Table.Cell>
           </Table.Row>

@@ -1,39 +1,24 @@
-export const CATEGORY_VALUES = [
-  "all",
-  "electronics",
-  "clothing",
-  "homeAndGarden",
-  "sports",
-] as const;
-
-export type CategoryValue = (typeof CATEGORY_VALUES)[number];
-
-export type Option = {
-  label: string;
-  value: CategoryValue;
-};
-
-export type CategoryKey = Exclude<CategoryValue, "all">;
-
-export type ProductFormType = {
+export type Category = {
   id: number;
   name: string;
-  category: CategoryKey;
+};
+
+export type NewCategory = Omit<Category, "id">;
+
+export type ProductFormType = {
+  id?: number;
+  name: string;
+  categoryId: number;
   price: number;
   stock: number;
 };
 
-export type ProductCategory =
-  | "Electronics"
-  | "Clothing"
-  | "Home & Garden"
-  | "Sports";
 export type StatusValue = "In Stock" | "Medium" | "Low Stock";
 
 export type Product = {
-  id: number;
+  id?: number;
   name: string;
-  category: ProductCategory;
+  categoryId: number;
   price: number;
   stock: number;
   status?: StatusValue;

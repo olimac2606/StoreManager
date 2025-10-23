@@ -16,6 +16,7 @@ export class SuppliersService {
     const supplierFound = await this.SupplierRepository.findOne({
       where: {
         contactName: createSupplierDto.contactName,
+        companyName: createSupplierDto.companyName,
       },
     });
 
@@ -26,7 +27,11 @@ export class SuppliersService {
     return this.SupplierRepository.save(newSupplier);
   }
   findAll() {
-    return this.SupplierRepository.find();
+    return this.SupplierRepository.find({
+      order: {
+        id: 'DESC',
+      },
+    });
   }
 
   async findOne(id: number) {

@@ -1,88 +1,86 @@
 import { Field, Input, Stack, NumberInput } from "@chakra-ui/react"
-import SelectChakra from "../SelectChakra";
-import type { Option, ProductFormType, Product } from "@/types/product";
-import { useEditingProduct } from "@/assets/contexts/EditingProductContext";
-import { isCategoryLabel, isCategoryKey, labelToValue, type CategoryKey, } from "@/types/categories"
+import SelectChakra from "../SelectChakra"
+import type { ProductFormType } from "@/types/product"
+import { useEditingProduct } from "@/assets/contexts/EditingProductContext"
+import { useCategories } from "@/assets/contexts/CategoriesContext"
 
 type Props = {
-    handleForm: (dataForm: ProductFormType) => void;
-    onSubmitted?: () => void;
-    formId?: string;
-    currentProducts: Product[];
+  handleForm: (dataForm: ProductFormType) => void
+  onSubmitted?: () => void
+  formId?: string
 }
 
-export default function ProductForm({ handleForm, onSubmitted, formId, currentProducts }: Props) {
+export default function ProductForm({
+  handleForm,
+  onSubmitted,
+  formId,
+}: Props) {
 
-    const options: Option[] = [
-        { label: "Electronics", value: "electronics" },
-        { label: "Clothing", value: "clothing" },
-        { label: "Home & Garden", value: "homeAndGarden" },
-        { label: "Sports", value: "sports" },
-    ]
+  const { editingProduct } = useEditingProduct()
+  const { categories } = useCategories()
 
-    const { editingProduct } = useEditingProduct()
+  const initialName = editingProduct?.name ?? ""
+  const initialPrice = editingProduct?.price ?? 0
+  const initialStock = editingProduct?.stock ?? 0
+  const defaultCategoryValue = editingProduct?.categoryId ?? undefined
 
-    const initialName = editingProduct?.name ?? "";
-    const initialPrice = editingProduct?.price ?? 0;
-    const initialStock = editingProduct?.stock ?? 0;
-    const defaultCategoryValue: CategoryKey | undefined = isCategoryLabel(
-        editingProduct?.category
-    )
-        ? labelToValue(editingProduct!.category)
-        : undefined;
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        const fd = new FormData(e.currentTarget);
-        const catRaw = fd.get("category");
-        if (!isCategoryKey(catRaw)) {
-            return;
-        }
-        const payload: ProductFormType = {
-            id: editingProduct?.id ?? Math.max(0, ...currentProducts.map(p => p.id)) + 1,
-            name: String(fd.get("name") ?? "").trim(),
-            category: catRaw,
-            price: Number(fd.get("price") ?? 0),
-            stock: Number(fd.get("stock") ?? 0),
-        };
-
-        handleForm(payload);
-        onSubmitted?.()
-        e.currentTarget.reset()
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const fd = new FormData(e.currentTarget)
+    const payload: ProductFormType = {
+      ...(editingProduct ? { id: editingProduct.id } : {}),
+      name: String(fd.get("name") ?? "").trim(),
+      categoryId: Number(fd.get("category")),
+      price: Number(fd.get("price") ?? 0),
+      stock: Number(fd.get("stock") ?? 0),
     }
 
-    return (
-        <form id={formId} onSubmit={handleSubmit}>
-            <Stack>
-                <Field.Root>
-                    <Field.Label>Product Name</Field.Label>
-                    <Input name="name" defaultValue={initialName} />
-                    <Field.ErrorText></Field.ErrorText>
-                </Field.Root>
+    handleForm(payload)
+    onSubmitted?.()
+    e.currentTarget.reset()
+  }
 
-                <Field.Root>
-                    <Field.Label>Select Category</Field.Label>
-                    <SelectChakra option={options} defaultValue={defaultCategoryValue} />
-                    <Field.ErrorText></Field.ErrorText>
-                </Field.Root>
+  const preventEnterSubmit = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === "Enter") e.preventDefault()
+  }
 
-                <Field.Root>
-                    <Field.Label>Price</Field.Label>
-                    <NumberInput.Root name="price" defaultValue={`${initialPrice}`} className="w-full">
-                        <NumberInput.Control />
-                        <NumberInput.Input />
-                    </NumberInput.Root>
-                    <Field.ErrorText></Field.ErrorText>
-                </Field.Root>
+  return (
+    <form id={formId} onSubmit={handleSubmit} onKeyDown={preventEnterSubmit}>
+      <Stack>
+        <Field.Root>
+          <Field.Label>Product Name</Field.Label>
+          <Input name="name" defaultValue={initialName} />
+        </Field.Root>
 
-                <Field.Root>
-                    <Field.Label>Stock</Field.Label>
-                    <NumberInput.Root name="stock" defaultValue={`${initialStock}`} className="w-full">
-                        <NumberInput.Control />
-                        <NumberInput.Input />
-                    </NumberInput.Root>
-                    <Field.ErrorText></Field.ErrorText>
-                </Field.Root>
-            </Stack>
-        </form>
-    )
+        <Field.Root>
+          <Field.Label>Select Category</Field.Label>
+          <SelectChakra option={categories} defaultValue={String(defaultCategoryValue)} />
+        </Field.Root>
+
+        <Field.Root>
+          <Field.Label>Price</Field.Label>
+          <NumberInput.Root
+            name="price"
+            defaultValue={`${initialPrice}`}
+            className="w-full"
+          >
+            <NumberInput.Control />
+            <NumberInput.Input />
+          </NumberInput.Root>
+        </Field.Root>
+
+        <Field.Root>
+          <Field.Label>Stock</Field.Label>
+          <NumberInput.Root
+            name="stock"
+            defaultValue={`${initialStock}`}
+            className="w-full"
+          >
+            <NumberInput.Control />
+            <NumberInput.Input />
+          </NumberInput.Root>
+        </Field.Root>
+      </Stack>
+    </form>
+  )
 }

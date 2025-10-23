@@ -1,13 +1,12 @@
-import DialogChakra from "../components/DialogChakra"
-import CrossIcon from "../utils/icons/CrossIcon"
 import { InputGroup, Input } from "@chakra-ui/react"
 import Card from "../components/Card"
 import SearchIcon from "../utils/icons/SearchIcon"
 import SuppliersTable from "../components/Suppliers/SuppliersTable"
 import { useState, useMemo, useEffect } from "react"
-import SupplierForm from "../components/Suppliers/SupplierForm"
 import axios from "axios"
 import type { Supplier, SupplierPayload } from "@/types/suppliers"
+import { toaster } from "@/components/ui/toaster"
+import SupplierDialog from "../components/Suppliers/SupplierDialog"
 
 export default function Suppliers() {
   const headers: string[] = [
@@ -18,7 +17,7 @@ export default function Suppliers() {
     "Actions",
   ]
 
-  const [copySuppliers, setCopySuppliers] = useState<Supplier[]>([])
+  const [suppliers, setSuppliers] = useState<Supplier[]>([])
   const [inputValue, setInputValue] = useState("")
   const [onPost, setOnPost] = useState<SupplierPayload>()
   const [onPatch, setOnPatch] = useState<SupplierPayload>()
@@ -28,13 +27,13 @@ export default function Suppliers() {
     const fetchSuppliers = async () => {
       try {
         const res = await axios.get("http://localhost:3000/suppliers/")
-        setCopySuppliers(res.data)
+        setSuppliers(res.data)
       } catch (error) {
         console.log("Error getting suppliers", error)
       }
     }
     fetchSuppliers()
-  }, [])
+  }, [suppliers])
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value)
@@ -42,38 +41,44 @@ export default function Suppliers() {
   const filteredSuppliers = useMemo(() => {
     const input = inputValue.trim().toLowerCase();
 
-    return copySuppliers.filter(supplier => supplier.contactName.toLowerCase().includes(input))
-  }, [copySuppliers, inputValue]);
+    return suppliers.filter(supplier => supplier.contactName.toLowerCase().includes(input))
+  }, [suppliers, inputValue]);
 
   const onDelete = (id: number) => {
     setOnDeleteSupplier(id)
-    setCopySuppliers(prev => prev.filter(supplier => supplier.id !== id))
   }
 
   const handleForm = (data: { id?: number, companyName: string, contactName: string, email: string, phone: string }) => {
-    const newSupplier: Supplier = {
-      id: data.id ? data.id : copySuppliers.length > 0 ? copySuppliers.length + 1 : 1,
-      companyName: data.companyName,
-      contactName: data.contactName,
-      email: data.email,
-      phone: data.phone,
-    }
     if (data.id) {
       setOnPatch(data)
-      setCopySuppliers(prev => prev.map(supplier => supplier.id === data.id ? newSupplier : supplier))
       return
     }
     setOnPost(data)
-    setCopySuppliers(prev => [newSupplier, ...prev])
   }
 
   useEffect(() => {
     if (!onPost) return
     const fetchSuppliers = async () => {
       try {
-        await axios.post('http://localhost:3000/suppliers/', onPost)
+        const res = await axios.post('http://localhost:3000/suppliers/', onPost)
+        console.log(res)
+        if (res.data.response) {
+          toaster.create({
+            description: res.data.response,
+            type: "error"
+          })
+          return
+        }
+        toaster.create({
+          description: "Supplier created succesfully",
+          type: "success"
+        })
       } catch (error) {
         console.log("Error creating supplier", error)
+        toaster.create({
+          description: "There was an error creating supplier",
+          type: "error"
+        })
       }
     }
 
@@ -85,8 +90,16 @@ export default function Suppliers() {
     const fetchSuppliers = async () => {
       try {
         await axios.patch(`http://localhost:3000/suppliers/${onPatch.id}`, onPatch)
+        toaster.create({
+          description: "Supplier updated succesfully",
+          type: "success"
+        })
       } catch (error) {
         console.log("Error updating supplier", error)
+        toaster.create({
+          description: "There was an error updating supplier",
+          type: "error"
+        })
       }
     }
 
@@ -99,8 +112,16 @@ export default function Suppliers() {
     const deleteSupplier = async () => {
       try {
         await axios.delete(`http://localhost:3000/suppliers/${onDeleteSupplier}`)
+        toaster.create({
+          description: "Supplier deleted succesfully",
+          type: "warning"
+        })
       } catch (error) {
         console.log("Error deleting supplier", error)
+        toaster.create({
+          description: "There was an error deleting supplier",
+          type: "error"
+        })
       }
     }
 
@@ -114,16 +135,7 @@ export default function Suppliers() {
           <h1 className="text-[30px] font-[700]">Suppliers</h1>
           <span className="text-[#667085]">Manage your supplier database</span>
         </div>
-        <DialogChakra
-          buttonStyles="bg-[#5CE18C]"
-          buttonText="Add Supplier"
-          dialogTitle="Add New Supplier"
-          saveButtonStyles="bg-[#5CE18C]"
-          formId="supplierForm"
-        >
-          <CrossIcon color="#FFFFFF" size="10" />
-          <SupplierForm formId="supplierForm" handleForm={handleForm} />
-        </DialogChakra>
+        <SupplierDialog handleForm={handleForm} />
       </div>
       <Card minHeight="min-h-auto">
         <InputGroup startElement={<SearchIcon color="#667085" size="20" />}>

@@ -1,23 +1,28 @@
 import { Select, createListCollection } from "@chakra-ui/react";
-import type { Option } from "@/types/product";
-import type { CategoryKey, CategoryValue } from "@/types/categories";
+import type { Category } from "@/types/product";
 
 type Props = {
-  option: Option[];
-  onChangeCategory?: (category: CategoryValue) => void; 
-  defaultValue?: CategoryKey
+  option?: Category[];
+  onChangeCategory?: (category: string) => void;
+  defaultValue?: string;
 };
 
-export default function SelectChakra({ option, onChangeCategory, defaultValue }: Props) {
-  const categories = createListCollection({ items: option });
+export default function SelectChakra({ option = [], onChangeCategory, defaultValue }: Props) {
+  const categories = createListCollection({
+    items: option.map((cat) => ({
+      value: String(cat.id),
+      label: cat.name,
+    })),
+  });
+
   return (
     <Select.Root
       collection={categories}
       size="md"
       className="w-full"
-      defaultValue={defaultValue ? [defaultValue] : ["all"]}
+      defaultValue={defaultValue ? [defaultValue] : []}
       onValueChange={(e) => {
-        const v = e.value[0] as CategoryValue;
+        const v = e.value[0];
         onChangeCategory?.(v);
       }}
     >
@@ -30,11 +35,12 @@ export default function SelectChakra({ option, onChangeCategory, defaultValue }:
           <Select.Indicator />
         </Select.IndicatorGroup>
       </Select.Control>
+
       <Select.Positioner zIndex={1700}>
         <Select.Content>
-          {categories.items.map((category) => (
-            <Select.Item item={category} key={category.value}>
-              {category.label}
+          {categories.items.map((cat) => (
+            <Select.Item item={cat} key={cat.value}>
+              {cat.label}
               <Select.ItemIndicator />
             </Select.Item>
           ))}
